@@ -10,7 +10,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         directory = os.getcwd()
-        settings_path = os.path.join(directory, 'settings.py')
+        settings_path = os.path.join(directory, 'config', 'settings.py')
         settings_contents = open(settings_path, 'r').read()
         fp = open(settings_path, 'w')
         secret_key = ''.join([choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])

@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     'compressor',
 
     # Custom management app to generate secret key in config/settings.py
-    'new_secret',
+    'startup',
 
     # Project specific apps go here
     # 'my_app',
