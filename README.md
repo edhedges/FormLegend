@@ -1,4 +1,4 @@
-Django Boilerplate (Updated for Django 1.4)
+Eddie Hedges' fork of Martin Ogdens Django Boilerplate
 ===========================================
 
 A barebones default layout for organised Django development. Inspired a little by Ruby on Rails and 'Django Project Conventions by Zachary Voase (link below).
@@ -26,7 +26,7 @@ Any settings added in `environments/local.py` will be picked up and override any
  * [path.py](https://github.com/dottedmag/path.py): A module wrapper for os.path
  * [South](http://south.aeracode.org/): Intelligent database migrations
  * [django-grappelli](https://github.com/sehmaschine/django-grappelli): A jazzy skin for the Django admin interface.
- * [django-command-extensions](https://github.com/django-extensions): A a collection of custom extensions 
+ * [django-command-extensions](https://github.com/django-extensions): A a collection of custom extensions
  * [fabric](http://docs.fabfile.org/en/1.3.1/index.html): Application deployment and systems administration tasks.
  * [django-compressor](https://github.com/jezdez/django_compressor): Compresses linked and inline javascript or CSS into a single cached file.
 
