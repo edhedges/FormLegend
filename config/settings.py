@@ -131,6 +131,9 @@ INSTALLED_APPS = (
     'django_extensions',
     'compressor',
 
+    # Custom management app to generate secret key in config/settings.py
+    'new_secret',
+
     # Project specific apps go here
     # 'my_app',
 )

@@ -1,10 +1,13 @@
 import os
 import re
 from random import choice
-from django.core.management.base import NoArgsCommand, CommandError
+from django.core.management.base import NoArgsCommand
+
 
 class Command(NoArgsCommand):
+
     help = """ Regenerates the SECRET_KEY in settings.py """
+
     def handle_noargs(self, **options):
         directory = os.getcwd()
         settings_path = os.path.join(directory, 'settings.py')
