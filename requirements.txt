@@ -7,3 +7,6 @@ django-extensions
 Werkzeug
 git+git://github.com/jezdez/django_compressor.git
 django-registration
+django-simple-captcha
+PIL
+Pillow

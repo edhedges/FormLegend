@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'compressor',
     'registration',
+    'captcha',
 
     # Custom management command apps
     'startup',
