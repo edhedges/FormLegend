@@ -1,4 +1,3 @@
-from path import path
 from config.settings import *
 
 
@@ -11,9 +10,8 @@ DATABASES = {
 
 DEBUG = True
 
-# config/environments/local.py is ignored to allow for easy settings
-# overrides without affecting others environments / developers
-try:
-    from local import *
-except ImportError:
-    pass
+#django-registration settings for dev
+ACCOUNT_ACTIVATION_DAYS = 7
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+DEFAULT_FROM_EMAIL = 'eddiehedges@gmail.com'

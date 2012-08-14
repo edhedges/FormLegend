@@ -14,9 +14,9 @@ DATABASES = {
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
-# settings/local.py is ignored to allow for easy settings
-# overrides without affecting others
-try:
-    from local import *
-except ImportError:
-    pass
+#django-registration settings for prod
+ACCOUNT_ACTIVATION_DAYS = 7
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1023
+EMAIL_HOST_USER = 'username'
+EMAIL_HOST_PASSWORD = 'password'

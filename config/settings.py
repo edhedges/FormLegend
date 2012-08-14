@@ -1,5 +1,5 @@
 """
-Django settings for {{ project_name }} project.
+Django settings for FormLegend project.
 
 Common settings for all environments. Don't directly use this settings file,
 use environments/development.py or environments/production.py and import this
@@ -81,7 +81,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = ''
+SECRET_KEY = '+@1(xs^%fpyxqly5kgf7ge8tfl$m@zdha+glkuj^y9p)4r@*e)'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -130,8 +130,9 @@ INSTALLED_APPS = (
     'south',
     'django_extensions',
     'compressor',
+    'registration',
 
-    # Custom management app to generate secret key in config/settings.py
+    # Custom management command apps
     'startup',
 
     # Project specific apps go here
@@ -182,4 +183,4 @@ COMPRESS_CSS_FILTERS = ['compressor.filters.cssmin.CSSMinFilter']
 COMPRESS_JS_FILTERS = ['compressor.filters.jsmin.JSMinFilter']
 
 # django-grappelli
-GRAPPELLI_ADMIN_TITLE = "{{ project_name|title }} Admin"
+GRAPPELLI_ADMIN_TITLE = "FormLegend Admin"

@@ -5,5 +5,5 @@ fabric
 django-grappelli
 django-extensions
 Werkzeug
-
 git+git://github.com/jezdez/django_compressor.git
+django-registration
