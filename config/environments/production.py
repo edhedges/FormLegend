@@ -20,3 +20,6 @@ EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1023
 EMAIL_HOST_USER = 'username'
 EMAIL_HOST_PASSWORD = 'password'
+
+#django-simple-captcha settings
+CAPTCHA_LENGTH = 7

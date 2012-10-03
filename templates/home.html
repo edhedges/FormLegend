@@ -1,4 +1,31 @@
 {% extends "base.html" %}
+{% block title %}Home{% endblock title %}
+
 {% block content %}
-<h2>Home</h2>
+<div class="row">
+  <h2>Welcome!</h2>
+</div>
+<div class="row">
+  <div class="offset-by-half seven columns">
+    <p>FormLegend allows anyone that has control of the markup of their website to integrate forms effortlessly.</p>
+    <p>Placing a FormLegend form on your website is as easy as...</p>
+    <ul>
+      {% if not user.is_authenticated %}
+      <li><a href="{% url registration_register %}">Register a new account</a></li>
+      <li><a href="{% url auth_login %}">Login to your acount</a></li>
+      {% endif %}
+      {% if user.is_authenticated %}
+      <li>Go to your user profile</li>
+      {% endif %}
+      <li>Click the "Create a FormLegend Form" button</li>
+      <li>Follow the steps to create your form</li>
+      <li>Take the markup and place it on your website</li>
+      <li>A FormLegend form will now be on your site</li>
+    </ul>
+  </div>
+  <div class="offset-by-one five columns">
+    <p>Take a look at this live example.</p>
+    <a href="//edhedges.com"><img src="http://placekitten.com/g/275/300" alt="placekitten"></a>
+  </div>
+</div>
 {% endblock content %}

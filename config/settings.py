@@ -137,7 +137,7 @@ INSTALLED_APPS = (
     'startup',
 
     # Project specific apps go here
-    # 'my_app',
+    'formLegend',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -176,7 +176,7 @@ STATICFILES_FINDERS = global_settings.STATICFILES_FINDERS + (
 )
 
 
-# Third-party app settings
+# Third-party app settings for all environments
 
 # django-compressor
 COMPRESS_ROOT = STATIC_ROOT

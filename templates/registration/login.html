@@ -1,27 +1,40 @@
-{% extends "registration/base.html" %}
-
-{% block title %}Log in{% endblock %}
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
+<div class="row">
+  <h2>Login</h2>
+</div>
 
-<h1>Log in</h1>
-
-{% if form.errors %}
-<p class="error">Please correct the errors below:</p>
-{% endif %}
-
-<form method="post" action="?next={{ next|default:"/" }}">{% csrf_token %}
-<dl>
-<dt><label for="id_username">Username:</label>{% if form.username.errors %} <span class="error">{{ form.username.errors|join:", " }}</span>{% endif %}</dt>
-<dd>{{ form.username }}</dd>
-<dt><label for="id_password">Password:</label>{% if form.password.errors %} <span class="error">{{ form.password.errors|join:", " }}</span>{% endif %}</dt>
-<dd>{{ form.password }}</dd>
-<dt><input type="submit" value="Log in" /></dt>
-</dl>
-</form>
-{% endblock %}
-
-{% block content-related %}
-<p>If you don't have an account, you can <a href="/accounts/register/">sign
-up</a> for one.
+<div class="row">
+  {% if form.non_field_errors %}
+  <p class="errors">Please correct the following errors:</p>
+  <span class="errors">{{ form.non_field_errors }}</span>
+  {% endif %}
+  <!--THE NEXT SHOULD BE THEIR PROFILE -->
+  <div class="nine columns">
+    <form method="post" action="?next={{ next|default:"/" }}">
+      {% if form.non_field_errors %}
+      <p class="errors">Please correct the following errors:</p>
+      <span class="errors">{{ form.non_field_errors }}</span>
+      {% endif %}
+      {% csrf_token %}
+      {% for field in form.visible_fields %}
+          <div class="formElementGroup">
+            {{ field.label|title }}
+            {% if field.errors %}
+            <span class="errors">{{ field.errors }}</span>
+            {% endif %}
+            {{ field|safe }}
+          </div>
+      {% endfor %}
+      <input class="formButton" type="submit" value="Login" />
+    </form>
+  </div>
+  <div class="six columns">
+    <h4>Form Information</h4>
+    <p>If you have registered an account with us then just provide your username and password to login and begin making forms!</p>
+    <p>If you do not have an account, you can <a href="{% url registration_register %}">register here</a>.</p>
+  </div>
+</div>
 {% endblock %}

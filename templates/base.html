@@ -7,29 +7,61 @@
     <meta name="author" content="Eddie Hedges">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
-    <!--[if IE]>
-    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <!--[if lt IE 9]>
+    <script  type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     {% compress css %}
-        <!-- Site wide styles -->
-        <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/skeleton.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/normalize.css">
-        <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/project.css">
-        <!-- Extra styles -->
-        {% block extra_styles %}{% endblock extra_styles %}
+    <!-- Site wide styles -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/skeleton.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/normalize.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/project.css">
+    <!-- Extra styles -->
+    {% block extra_styles %}{% endblock extra_styles %}
     {% endcompress %}
     <!-- Page title -->
-    <title>{% block title %}{% endblock title %}</title>
+    <title>FormLegend - {% block title %}{% endblock title %}</title>
 </head>
 <body>
-    {% block content %}{% endblock content %}
+    <div class="container">
+        <header>
+            <div class="row">
+                {% block header %}
+                <div class="offset-by-one seven columns">
+                    <h1 id="formlegend_logo"><a href="{% url home %}">FormLegend</a></h1>
+                </div>
+                <div id="authentication_links" class="seven columns">
+                {% if user.is_authenticated %}
+                    <ul>
+                        <li>Hello, <a href="">{{ user.username }}</a> | <a href="{% url auth_logout %}">Logout</a></li>
+                    </ul>
+                    {% else %}
+                    <ul>
+                        <li><a href="{% url auth_login %}">Login</a></li> |
+                        <li><a href="{% url registration_register %}">Register</a></li>
+                    </ul>
+                {% endif %}
+                </div>
+                {% endblock header %}
+            </div>
+        </header>
+        <div class="content">
+            {% block content %}
+            {% endblock content %}
+        </div>
+        <footer>
+            {% block footer %}
+            <p>Developed by <a href="//edhedges.com">Eddie Hedges</a></p>
+            {% endblock footer %}
+        </footer>
+        <div class="push"></div>
+    </div>
     <!-- jQuery from google or fallback onto local download -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-    <script>!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}javascripts/libs/jquery-1.8.0.min.js"%3E%3C/script%3E'))</script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}javascripts/libs/jquery-1.8.0.min.js"%3E%3C/script%3E'))</script>
     {% compress js %}
-        <!-- Custom js file will go here. -->
+    <!-- Custom js file will go here. -->
     {% endcompress %}
-    <script>
+    <script type="text/javascript">
         var _gaq=[['_setAccount','MY_SITES_ID'],['_trackPageview']]; // Change MY_SITES_ID to be your site's ID
         (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
         g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';

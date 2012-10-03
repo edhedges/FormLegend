@@ -1,1 +1,118 @@
 /* Custom Project wide defaults will go here  */
+html, body {
+  font-family: Verdana, sans-serif;
+  line-height: 1.5;
+  background-color: #fff;
+  color: #000;
+}
+
+a, a:visited {
+  color: #FF640A;
+  text-decoration: none;
+}
+
+a:hover, a:active {
+  color: #FF8C0A;
+}
+
+header {
+  margin-top: 15px;
+  background-color: #E6FFFF;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 2px 2px #ACCCCC;
+}
+
+header a, header ul, header li {
+  display: inline;
+}
+
+#formlegend_logo {
+  display: inline-block;
+  width: 300px;
+  text-align: center;
+}
+
+#authentication_links {
+  display: inline-block;
+  text-align: center;
+  margin-top: 35px;
+}
+
+#authentication_links ul {
+  margin: 0;
+  padding-left: 0;
+}
+
+.content {
+  min-height: 500px;
+  background-color: #E6FFFF;
+  margin-top: 25px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 2px 2px #ACCCCC;
+}
+
+.content h2 {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+
+footer {
+  margin-top: 25px;
+  padding: 17px;
+  background-color: #E6FFFF;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 2px 2px #ACCCCC;
+  text-align: center;
+}
+
+.push {
+  height: 15px;
+}
+
+form {
+  width: 250px;
+  display: block;
+  margin: 25px auto;
+  padding: 1px;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+.formElementGroup {
+  display: block;
+  padding: 15px;
+}
+
+.formElementGroup input {
+  display: block;
+  width: 215px;
+}
+
+.formElementGroup img {
+  display: block;
+}
+
+.errors, .errorlist {
+  color: #F20056;
+  display: block;
+  margin: 7px 0 7px 0;
+  padding: 0;
+}
+
+.errors li, .errorlist li {
+  list-style-type: none;
+}
+
+.formButton {
+  margin: 0 0 25px 15px;
+  padding: 2px;
+  height: 40px;
+  width: 221px;
+}

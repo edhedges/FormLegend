@@ -1,40 +1,36 @@
-{% extends "registration/base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Sign up{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
-
-  {% if form.errors %}
-  <p class="errors">Please correct the errors below: {{ form.non_field_errors }}</p>
-  {% endif %}
-
-  <h1>Create an account</h1>
-
-  <form method="post" action="" class="wide">
-	{% csrf_token %}
-    {% if form.non_field_errors %}
-          <div class="alert alert-error">Please make sure that the passwords match.</div>
-        {% endif %}
-        {% for field in form.visible_fields %}
-          <p>{{ field.label|title }}</p>
+<div class="row">
+  <h2>Register</h2>
+</div>
+<div class="row">
+  <div class="nine columns">
+    <form method="post" action="." class="wide">
+      {% if form.non_field_errors %}
+      <p class="errors">Please correct the following errors:</p>
+      <span class="errors">{{ form.non_field_errors }}</span>
+      {% endif %}
+      {% csrf_token %}
+      {% for field in form.visible_fields %}
+        <div class="formElementGroup">
+          {{ field.label|title }}
           {% if field.errors %}
-            <div class="alert alert-error">{{ field.errors }}</div>
+          <span class="errors">{{ field.errors }}</span>
           {% endif %}
           {{ field|safe }}
-        {% endfor %}
-        <button class="btn" type="submit" name="sign_up_button" id="sign_up_button">Sign Up</button>
-  </form>
-
-{% endblock %}
-
-{% block content-related %}
-<p>Fill out the form to the left (all fields are required), and your
-account will be created; you'll be sent an email with instructions on how
-to finish your registration.</p>
-
-<p>We'll only use your email to send you signup instructions. We hate spam
-as much as you do.</p>
-
-<p>This account will let you log into the ticket tracker, claim tickets,
-and be exempt from spam filtering.</p>
+        </div>
+      {% endfor %}
+      <button class="formButton" type="submit" name="sign_up_button" id="sign_up_button">Sign Up</button>
+    </form>
+    <div class="clear"></div>
+  </div>
+  <div class="six columns">
+    <h4>Form Information</h4>
+    <p>This form (all fields are required) will create you an account and an email will be sent to you with instructions on how to finish registering.
+    <p>We'll only use your email to send you registration instructions. We hate spam much as you do.</p>
+  </div>
+</div>
 {% endblock %}

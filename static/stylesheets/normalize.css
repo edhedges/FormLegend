@@ -85,10 +85,15 @@ textarea {
 
 /*
  * Addresses margins handled incorrectly in IE6/7
+ * Slightly MODIFIED by me to make the html and body be the same size (whole browser window)
  */
 
-body {
+html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    display: inline-block;
 }
 
 
