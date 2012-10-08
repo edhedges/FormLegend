@@ -15,7 +15,6 @@ from captchaForm import *
 from django.contrib import admin
 admin.autodiscover()
 
-
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {'template': 'home.html'}, name='home'),
     #admin and grappelli skin for admin urls
@@ -43,7 +42,8 @@ urlpatterns += patterns('',
    # confusing 404.
    url(r'^activate/(?P<activation_key>\w+)/$',
        activate,
-       {'backend': 'registration.backends.default.DefaultBackend'},
+       {'backend': 'registration.backends.default.DefaultBackend',
+       'extra_context': {'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS}},
        name='registration_activate'),
    url(r'^register/$',
        register,
