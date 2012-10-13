@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{% if user.is_authenticated %}{{ user.username }}'s{% else %}Unauthenticated{% endif %} Dashboard{% endblock title %}
+
+
+{% block content %}
+<div class="row">
+  {% if user.is_authenticated %}
+  <h2>{{ user.username }}'s Dashboard</h2>
+  {% else %}
+  <h2>Unauthenticated Dashboard</h2>
+  {% endif %}
+</div>
+
+<div class="row">
+  <div class="sixteen columns">
+    {% if user.is_authenticated %}
+      <p>Logged in user needs to be able to add their website, create a form, and get the generated js.</p>
+      {% else %}
+      <p>It looks like you aren't logged in. Please <a href="{% url auth_login %}">Login</a> to start using FormLegend.</p>
+      {% endif %}
+  </div>
+</div>
+{% endblock content %}

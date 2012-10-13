@@ -12,6 +12,8 @@ from registration.views import register
 
 from captchaForm import *
 
+import forms_builder.forms.urls
+
 from django.contrib import admin
 admin.autodiscover()
 
@@ -19,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^$', direct_to_template, {'template': 'home.html'}, name='home'),
     #admin and grappelli skin for admin urls
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^forms/', include(forms_builder.forms.urls)),
     url(r'^grappelli/', include('grappelli.urls')),
     #django-registration
     #url(r'^accounts/', include('registration.urls')),
@@ -84,6 +87,14 @@ urlpatterns += patterns('',
    url(r'^password/reset/done/$',
        auth_views.password_reset_done,
        name='auth_password_reset_done'),
+)
+
+#url patterns for formLegend
+urlpatterns += patterns('',
+    url(r'^profile/$',
+        direct_to_template,
+        {'template': 'profile.html'},
+        name='profile'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

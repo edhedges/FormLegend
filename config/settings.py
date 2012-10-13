@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'compressor',
     'registration',
     'captcha',
+    'forms_builder.forms',
 
     # Custom management command apps
     'startup',
@@ -170,7 +171,9 @@ LOGGING = {
     }
 }
 
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + ()
+TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    'django.core.context_processors.request',
+)
 
 STATICFILES_FINDERS = global_settings.STATICFILES_FINDERS + (
     'compressor.finders.CompressorFinder',
