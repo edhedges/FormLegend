@@ -3,9 +3,9 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.static import static
 
-from django.views.generic.simple import direct_to_template
-
 from django.contrib.auth import views as auth_views
+
+from django.views.generic.simple import direct_to_template
 
 from registration.views import activate
 from registration.views import register
@@ -23,12 +23,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^forms/', include(forms_builder.forms.urls)),
     url(r'^grappelli/', include('grappelli.urls')),
-    #django-registration
-    #url(r'^accounts/', include('registration.urls')),
-
     #django-simple-captcha
     url(r'^captcha/', include('captcha.urls')),
-
     #may need this for favicon.ico but I am not sure
     #url(r'^favicon\.ico$', RedirectView.as_view(url='/static/project/img/favicon.ico')),
 )
@@ -91,10 +87,8 @@ urlpatterns += patterns('',
 
 #url patterns for formLegend
 urlpatterns += patterns('',
-    url(r'^profile/$',
-        direct_to_template,
-        {'template': 'profile.html'},
-        name='profile'),
+    # think about putting a username on this url
+    url(r'^profile/$', direct_to_template, {'template': 'formLegend/profile.html'}, name='profile'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

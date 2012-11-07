@@ -13,7 +13,7 @@
   {% endif %}
   <!--THE NEXT SHOULD BE THEIR PROFILE -->
   <div class="nine columns">
-    <form method="post" action="?next={{ next|default:"/" }}">
+    <form method="post" action="?next={{ next|default:"/profile/" }}">
       {% if form.non_field_errors %}
       <p class="errors">Please correct the following errors:</p>
       <span class="errors">{{ form.non_field_errors }}</span>
