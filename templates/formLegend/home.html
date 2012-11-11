@@ -15,7 +15,7 @@
       <li><a href="{% url auth_login %}">Login to your acount</a></li>
       {% endif %}
       {% if user.is_authenticated %}
-      <li>Go to your user profile</li>
+      <li>Go to your <a href="{% url dashboard %}">dashboard</a></li>
       {% endif %}
       <li>Click the "Create a FormLegend Form" button</li>
       <li>Follow the steps to create your form</li>

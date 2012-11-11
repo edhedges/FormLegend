@@ -17,11 +17,11 @@ a:hover, a:active {
 
 header {
   margin-top: 15px;
-  background-color: #E6FFFF;
+  background-color: #f3ffff;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
-  box-shadow: 0 0 2px 2px #ACCCCC;
+  box-shadow: 0 0 2px 2px #accccc;
 }
 
 header a, header ul, header li {
@@ -47,12 +47,12 @@ header a, header ul, header li {
 
 .content {
   min-height: 500px;
-  background-color: #E6FFFF;
+  background-color: #f3ffff;
   margin-top: 25px;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
-  box-shadow: 0 0 2px 2px #ACCCCC;
+  box-shadow: 0 0 2px 2px #accccc;
 }
 
 .content h2 {
@@ -64,11 +64,11 @@ header a, header ul, header li {
 footer {
   margin-top: 25px;
   padding: 17px;
-  background-color: #E6FFFF;
+  background-color: #f3ffff;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
-  box-shadow: 0 0 2px 2px #ACCCCC;
+  box-shadow: 0 0 2px 2px #accccc;
   text-align: center;
 }
 
@@ -95,6 +95,15 @@ form {
   width: 215px;
 }
 
+.formElementGroup label {
+  display: inline;
+}
+
+.formElementGroup input[type='checkbox'] {
+  display: inline;
+  width: auto;
+}
+
 .formElementGroup img {
   display: block;
 }
@@ -115,4 +124,55 @@ form {
   padding: 2px;
   height: 40px;
   width: 221px;
+}
+
+.fl_objs {
+  padding: 0;
+}
+
+.fl_objs li {
+  border: 1px solid #333;
+  border-radius: 10px;;
+  margin: 20px 0 20px 0;
+  padding: 10px;
+  list-style-type: none;
+}
+
+.fl_obj_header {
+  font-weight: bold;
+  border-bottom: 1px solid #333;
+  margin-bottom: 15px;
+}
+
+.fl_obj_management {
+  float: right;
+}
+
+.fl_obj_header, .fl_obj_detail {
+  display: block;
+}
+
+.container .columns.pageSplit {
+  margin-right: 0;
+}
+
+.pageSplit {
+  padding-right: 30px;
+  border-right: 1px solid #333;
+}
+
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+  .pageSplit {
+    padding-right: 24px;
+    border-right: 1px solid #333;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .pageSplit {
+    padding-right: 0;
+    padding-bottom: 10px;
+    border-right: 0;
+    border-bottom: 1px solid #333;
+  }
 }

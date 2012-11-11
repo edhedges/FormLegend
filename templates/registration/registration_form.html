@@ -16,7 +16,7 @@
       {% csrf_token %}
       {% for field in form.visible_fields %}
         <div class="formElementGroup">
-          {{ field.label|title }}
+          <label>{{ field.label|title }}</label>
           {% if field.errors %}
           <span class="errors">{{ field.errors }}</span>
           {% endif %}

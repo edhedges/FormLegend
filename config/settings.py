@@ -72,6 +72,10 @@ STATICFILES_DIRS = (
     PROJECT_ROOT / 'static',
 )
 
+# Login url
+LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
+
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
@@ -173,6 +177,7 @@ LOGGING = {
 
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
 )
 
 STATICFILES_FINDERS = global_settings.STATICFILES_FINDERS + (

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Existing FormLegend Form{% endblock title %}
+
+
+{% block content %}
+<div class="row">
+  <h2>Edit Existing FormLegend Form</h2>
+</div>
+
+<div class="row">
+  <div class="offset-by-half fifteen columns">
+    {% if form.non_field_errors %}
+      <p class="errors">Please correct the following errors:</p>
+      <span class="errors">{{ form.non_field_errors }}</span>
+      {% endif %}
+    <form method="post" action=".">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="formElementGroup">
+        <label>{{ field.label|title }}</label>
+        {% if field.errors %}
+        <span class="errors">{{ field.errors }}</span>
+        {% endif %}
+        {{ field|safe }}
+      </div>
+      {% endfor %}
+     <input class="formButton" type="submit" value="Save Changes" />
+     <a href="{% url dashboard %}"><input class="formButton" type="button" value="Cancel" /></a>
+    </form>
+  </div>
+</div>
+{% endblock content %}

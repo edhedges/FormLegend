@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Existing FormLegend Website{% endblock title %}
+
+
+{% block content %}
+<div class="row">
+  <h2>Delete Existing FormLegend Website</h2>
+</div>
+
+<div class="row">
+  <div class="offset-by-one fifteen columns">
+    <form method="post" action=".">
+      {% csrf_token %}
+      <div class="formElementGroup">
+      <label>Delete <a href="{% url edit_fl_website object.website_slug %}">{{ object.site_name }}</a>?</label>
+      </div>
+      <input type="submit" value="Yes" class="formButton" />
+      <a href="{% url dashboard %}"><input type="button" value="No" class="formButton" /></a>
+    </form>
+  </div>
+</div>
+{% endblock content %}

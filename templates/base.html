@@ -32,7 +32,7 @@
                 <div id="authentication_links" class="seven columns">
                 {% if user.is_authenticated %}
                     <ul>
-                        <li>Hello, <a href="{% url profile %}">{{ user.username }}</a> | <a href="{% url auth_logout %}">Logout</a></li>
+                        <li>Hello, <a href="{% url dashboard %}">{{ user.username }}</a> | <a href="{% url auth_logout %}">Logout</a></li>
                     </ul>
                     {% else %}
                     <ul>

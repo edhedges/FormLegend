@@ -8,20 +8,18 @@
 
 <div class="row">
   {% if form.non_field_errors %}
-  <p class="errors">Please correct the following errors:</p>
-  <span class="errors">{{ form.non_field_errors }}</span>
+  <div class="offset-by-one seven columns">
+    <p class="errors">Please correct the following errors:</p>
+    <span class="errors">{{ form.non_field_errors }}</span>
+  </div>
   {% endif %}
   <!--THE NEXT SHOULD BE THEIR PROFILE -->
   <div class="nine columns">
-    <form method="post" action="?next={{ next|default:"/profile/" }}">
-      {% if form.non_field_errors %}
-      <p class="errors">Please correct the following errors:</p>
-      <span class="errors">{{ form.non_field_errors }}</span>
-      {% endif %}
+    <form method="post" action="?next={{ next|default:"/dashboard/" }}">
       {% csrf_token %}
       {% for field in form.visible_fields %}
           <div class="formElementGroup">
-            {{ field.label|title }}
+            <label>{{ field.label|title }}</label>
             {% if field.errors %}
             <span class="errors">{{ field.errors }}</span>
             {% endif %}
