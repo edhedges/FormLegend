@@ -46,9 +46,9 @@ class FormLegendForm(models.Model):
     form_name = models.CharField(max_length=50)
     form_url = models.URLField()
     result_emailed = models.BooleanField()
-    email_to = models.EmailField()
-    email_from = models.EmailField()
-    email_subject = models.CharField(max_length=50)
+    email_to = models.EmailField(blank=True)
+    email_from = models.EmailField(blank=True)
+    email_subject = models.CharField(blank=True, max_length=50)
     date_created = models.DateTimeField(auto_now_add=True)
     form_slug = models.SlugField(editable=False)
 

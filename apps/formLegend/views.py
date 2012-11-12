@@ -101,6 +101,18 @@ class AddFormView(LogInRequiredMixin, CreateView):
     template_name = 'formLegend/add_fl_form.html'
     success_url = '/dashboard/'
 
+    def get_context_data(self, **kwargs):
+        no_websites = True
+        authenticated_user = self.request.user
+        fl_websites = FormLegendWebsite.objects.filter(user=authenticated_user)
+        if fl_websites:
+            no_websites = False
+        context = super(AddFormView, self).get_context_data(**kwargs)
+        context.update({
+            'no_websites': no_websites
+        })
+        return context
+
     def form_valid(self, form):
         """
         This method overrides form_valid from the ModelFormMixin and

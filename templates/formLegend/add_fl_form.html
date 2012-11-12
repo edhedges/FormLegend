@@ -10,24 +10,41 @@
 
 <div class="row">
   <div class="offset-by-half fifteen columns">
-    {% if form.non_field_errors %}
+    {% if no_websites %}
+    <p>No websites have been added. You must <a href="{% url add_fl_website %}">add at least one website</a> in order to add a form.</p>
+    {% else %}
+      {% if form.non_field_errors %}
       <p class="errors">Please correct the following errors:</p>
       <span class="errors">{{ form.non_field_errors }}</span>
       {% endif %}
-    <form method="post" action=".">
-      {% csrf_token %}
-      {% for field in form %}
-      <div class="formElementGroup">
-        <label>{{ field.label|title }}</label>
-        {% if field.errors %}
-        <span class="errors">{{ field.errors }}</span>
-        {% endif %}
-        {{ field|safe }}
-      </div>
-      {% endfor %}
-     <input class="formButton" type="submit" value="Add Form" />
-     <a href="{% url dashboard %}"><input class="formButton" type="button" value="Cancel" /></a>
-    </form>
+      <form method="post" action=".">
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+        <div class="formElementGroup">
+          <label>{{ field.label|title }}</label>
+          {% if field.errors %}
+          <span class="errors">{{ field.errors }}</span>
+          {% endif %}
+          {{ field|safe }}
+        </div>
+        {% endfor %}
+        {% for field in form.hidden_fields %}
+          <div class="hiddenFormElementGroup">
+            <label>{{ field.label|title }}</label>
+            {% if field.errors %}
+            <span class="errors">{{ field.errors }}</span>
+            {% endif %}
+            {{ field|safe }}
+          </div>
+        {% endfor %}
+        <input class="formButton" onclick="submitClicked();" type="submit" value="Add Form" />
+        <a href="{% url dashboard %}"><input class="formButton" type="button" value="Cancel" /></a>
+      </form>
+    {% endif %}
   </div>
 </div>
 {% endblock content %}
+
+{% block custom_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}javascripts/addEditFLForm.js"></script>
+{% endblock custom_js %}

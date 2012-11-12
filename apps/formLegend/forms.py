@@ -19,6 +19,17 @@ class FormLegendFormForm(forms.ModelForm):
     class Meta:
         model = models.FormLegendForm
         exclude = ('user', 'date_created',)
+        widgets = {
+            'email_to': forms.HiddenInput(),
+            'email_from': forms.HiddenInput(),
+            'email_subject': forms.HiddenInput(),
+            'result_emailed': forms.CheckboxInput(
+                attrs={
+                    'id': 'resultEmailedID',
+                    'onclick': "resultEmailedCheckboxClicked();"
+                }
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         """
@@ -28,3 +39,12 @@ class FormLegendFormForm(forms.ModelForm):
         """
         super(FormLegendFormForm, self).__init__(*args, **kwargs)
         self.fields['website'].label_from_instance = lambda obj: "%s" % (obj.site_name)
+
+    def clean(self):
+        cleaned_data = super(FormLegendFormForm, self).clean()
+        email_result = cleaned_data.get('result_emailed')
+        if email_result:
+            pass
+        else:
+            pass
+        return cleaned_data

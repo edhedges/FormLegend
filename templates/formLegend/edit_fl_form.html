@@ -16,7 +16,7 @@
       {% endif %}
     <form method="post" action=".">
       {% csrf_token %}
-      {% for field in form %}
+      {% for field in form.visible_fields %}
       <div class="formElementGroup">
         <label>{{ field.label|title }}</label>
         {% if field.errors %}
@@ -25,9 +25,22 @@
         {{ field|safe }}
       </div>
       {% endfor %}
-     <input class="formButton" type="submit" value="Save Changes" />
+      {% for field in form.hidden_fields %}
+        <div class="hiddenFormElementGroup">
+          <label>{{ field.label|title }}</label>
+          {% if field.errors %}
+          <span class="errors">{{ field.errors }}</span>
+          {% endif %}
+          {{ field|safe }}
+        </div>
+      {% endfor %}
+     <input class="formButton" onclick="submitClicked();" type="submit" value="Save Changes" />
      <a href="{% url dashboard %}"><input class="formButton" type="button" value="Cancel" /></a>
     </form>
   </div>
 </div>
 {% endblock content %}
+
+{% block custom_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}javascripts/addEditFLForm.js"></script>
+{% endblock custom_js %}

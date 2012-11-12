@@ -31,22 +31,31 @@
       {% endif %}
     </div>
     <div class="offset-by-half seven columns">
-      <h4>My Forms <span class="fl_obj_management"><a href="{% url add_fl_form %}">Add A Form</a></span></h4>
+      <h4>My Forms
+        <span class="fl_obj_management">
+          {% if fl_websites %}
+          <a href="{% url add_fl_form %}">Add A Form</a>
+          {% endif %}
+        </span>
+      </h4>
       {% if fl_forms %}
       <ul class="fl_objs">
         {% for fl_form in fl_forms %}
-          <li>
-            <span class="fl_obj_header">
-              FormLegend Form <span class="fl_obj_management"><a href="{% url edit_fl_form fl_form.form_slug %}">Edit</a> | <a href="{% url delete_fl_form fl_form.form_slug %}">Delete</a></span>
-            </span>
-            <span class="fl_obj_detail">Name: {{ fl_form.form_name }}</span>
-            <span class="fl_obj_detail">Form URL: {{ fl_form.form_url }}</span>
-            <span class="fl_obj_detail">Corresponding Website: {{ fl_form.website.site_name }}</span>
-          </li>
+        <li>
+          <span class="fl_obj_header">
+            FormLegend Form <span class="fl_obj_management"><a href="{% url edit_fl_form fl_form.form_slug %}">Edit</a> | <a href="{% url delete_fl_form fl_form.form_slug %}">Delete</a></span>
+          </span>
+          <span class="fl_obj_detail">Name: {{ fl_form.form_name }}</span>
+          <span class="fl_obj_detail">Form URL: {{ fl_form.form_url }}</span>
+          <span class="fl_obj_detail">Corresponding Website: {{ fl_form.website.site_name }}</span>
+        </li>
         {% endfor %}
       </ul>
       {% else %}
       <p>You haven't added any forms.</p>
+      {% if not fl_websites %}
+      <p>You must add a website before you add a form.</p>
+      {% endif %}
       {% endif %}
     </div>
 </div>
