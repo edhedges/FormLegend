@@ -138,7 +138,6 @@ class AddFormView(LogInRequiredMixin, CreateView):
             fl_form_form.save()
             fl_field_forms = fl_form_formset.save(commit=False)
             for field_form in fl_field_forms:
-                print form
                 field_form.user = self.request.user
                 field_form.form_id = fl_form_form.pk
                 field_form.save()
@@ -167,12 +166,34 @@ class EditFormView(LogInRequiredMixin, UpdateView):
         """
         context = super(EditFormView, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['formLegendFormFormset'] = FormLegendFormFormSet(self.request.POST)
+            context['formLegendFormFormset'] = FormLegendFormFormSet(self.request.POST, instance=self.object)
         else:
             context['formLegendFormFormset'] = FormLegendFormFormSet(instance=self.object)
         return context
 
-    ### MUST IMPLEMENT THE EDIT PART DUDE!!!!! ###
+    def form_valid(self, form):
+        """
+        This method overrides form_valid and makes sure the
+        authenticated user is bound to both the FormLegendForm and
+        FormLegenField instances that are saved here.
+        """
+        context = self.get_context_data()
+        fl_form_formset = context['formLegendFormFormset']
+        if fl_form_formset.is_valid():
+            fl_form_form = form.save(commit=False)
+            fl_form_form.user = self.request.user
+            fl_form_form.save()
+            fl_field_forms = fl_form_formset.save(commit=False)
+            for field_form in fl_field_forms:
+                field_form.user = self.request.user
+                field_form.form_id = fl_form_form.pk
+                field_form.save()
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class DeleteFormView(LogInRequiredMixin, DeleteView):
