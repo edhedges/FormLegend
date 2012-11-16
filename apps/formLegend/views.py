@@ -1,16 +1,19 @@
-from django.views.generic import TemplateView, CreateView, UpdateView, \
+from django.http import HttpResponseRedirect
+from django.views.generic import TemplateView, CreateView, UpdateView,\
     DeleteView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from formLegend.models import FormLegendWebsite, FormLegendForm
-from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm
+from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm,\
+    FormLegendFormFormSet
 
 
 class LogInRequiredMixin(object):
     """
     Class view that can be inherited to require a user be logged in.
     """
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         """
@@ -82,7 +85,7 @@ class EditWebsiteView(LogInRequiredMixin, UpdateView):
 class DeleteWebsiteView(LogInRequiredMixin, DeleteView):
     """
     Class view that handles the request to a specific FormLegendWebsite
-    object and asks whether or not the user would liek to delete that
+    object and asks whether or not the user would like to delete that
     website. A yes deletes the website and a no will just go back to the
     users dashboard.
     """
@@ -102,26 +105,49 @@ class AddFormView(LogInRequiredMixin, CreateView):
     success_url = '/dashboard/'
 
     def get_context_data(self, **kwargs):
+        """
+        This method overrides get_context_data and makes sure that if
+        the user hasn't added any website than that is specified as well
+        as passing formLegendFormFormSet so the user can add form fields
+        to their form.
+        """
+        context = super(AddFormView, self).get_context_data(**kwargs)
         no_websites = True
         authenticated_user = self.request.user
         fl_websites = FormLegendWebsite.objects.filter(user=authenticated_user)
         if fl_websites:
             no_websites = False
-        context = super(AddFormView, self).get_context_data(**kwargs)
-        context.update({
-            'no_websites': no_websites
-        })
+        context['no_websites'] = no_websites
+        if self.request.POST:
+            context['formLegendFormFormset'] = FormLegendFormFormSet(self.request.POST)
+        else:
+            context['formLegendFormFormset'] = FormLegendFormFormSet()
         return context
 
     def form_valid(self, form):
         """
-        This method overrides form_valid from the ModelFormMixin and
-        makes sure the autenticated user is bound to it.
+        This method overrides form_valid and makes sure the
+        authenticated user is bound to both the FormLegendForm and
+        FormLegenField instances that are saved here.
         """
-        fl_form_form = form.save(commit=False)
-        fl_form_form.user = self.request.user
-        fl_form_form.save()
-        return super(AddFormView, self).form_valid(form)
+        context = self.get_context_data()
+        fl_form_formset = context['formLegendFormFormset']
+        if fl_form_formset.is_valid():
+            fl_form_form = form.save(commit=False)
+            fl_form_form.user = self.request.user
+            fl_form_form.save()
+            fl_field_forms = fl_form_formset.save(commit=False)
+            for field_form in fl_field_forms:
+                print form
+                field_form.user = self.request.user
+                field_form.form_id = fl_form_form.pk
+                field_form.save()
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class EditFormView(LogInRequiredMixin, UpdateView):
@@ -133,6 +159,20 @@ class EditFormView(LogInRequiredMixin, UpdateView):
     form_class = FormLegendFormForm
     template_name = 'formLegend/edit_fl_form.html'
     success_url = '/dashboard/'
+
+    def get_context_data(self, **kwargs):
+        """
+        This method overrides get_context_data and passes
+        formLegendFormFormSet so the user can edit the form.
+        """
+        context = super(EditFormView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            context['formLegendFormFormset'] = FormLegendFormFormSet(self.request.POST)
+        else:
+            context['formLegendFormFormset'] = FormLegendFormFormSet(instance=self.object)
+        return context
+
+    ### MUST IMPLEMENT THE EDIT PART DUDE!!!!! ###
 
 
 class DeleteFormView(LogInRequiredMixin, DeleteView):

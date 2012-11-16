@@ -1,14 +1,20 @@
 from django import forms
+from django.forms.models import inlineformset_factory
 
-import models
+from formLegend.models import FormLegendWebsite, FormLegendForm,\
+    FormLegendField
 
 
 class FormLegendWebsiteForm(forms.ModelForm):
     """
-    docs
+    A simple ModelForm that renders a FormLegendWebsite object as a form
+    for the user to be able to add and edit the fiels. The user and
+    date_created field are excluded. They user tied to the model will
+    receive it's value in the view which will go to the user logged in.
+    The date_created is created on each model creation.
     """
     class Meta:
-        model = models.FormLegendWebsite
+        model = FormLegendWebsite
         exclude = ('user', 'date_created',)
 
 
@@ -17,7 +23,7 @@ class FormLegendFormForm(forms.ModelForm):
     docs
     """
     class Meta:
-        model = models.FormLegendForm
+        model = FormLegendForm
         exclude = ('user', 'date_created',)
         widgets = {
             'email_to': forms.HiddenInput(),
@@ -48,3 +54,12 @@ class FormLegendFormForm(forms.ModelForm):
         else:
             pass
         return cleaned_data
+
+# Formset declared to tie a FormLegendField into a FormLegendForm
+FormLegendFormFormSet = inlineformset_factory(
+    FormLegendForm,
+    FormLegendField,
+    can_delete=False,
+    extra=1,
+    exclude=('user',)
+)

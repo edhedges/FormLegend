@@ -104,6 +104,10 @@ form {
   width: auto;
 }
 
+.formElementGroup select {
+  display: block;
+}
+
 .formElementGroup img {
   display: block;
 }
@@ -123,11 +127,40 @@ form {
   display: none;
 }
 
+#formLegendForm {
+  width: 350px;
+}
+
+.formLegendField {
+  width: 316px;
+  margin: 15px;
+  padding: 1px;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+.help_text {
+  display: block;
+  color: #008000;
+  margin: 10px 0 10px 0;
+}
+
 .formButton {
   margin: 0 0 25px 15px;
   padding: 2px;
   height: 40px;
   width: 221px;
+}
+
+.formLegendFormButton {
+  margin: 0 0 25px 63px;
+  padding: 2px;
+  height: 40px;
+  width: 221px;
+}
+
+.firstButton {
+  margin-top: 25px;
 }
 
 .fl_objs {
@@ -136,7 +169,7 @@ form {
 
 .fl_objs li {
   border: 1px solid #333;
-  border-radius: 10px;;
+  border-radius: 10px;
   margin: 20px 0 20px 0;
   padding: 10px;
   list-style-type: none;

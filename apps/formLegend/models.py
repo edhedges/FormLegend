@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.template.defaultfilters import slugify
 
@@ -11,7 +11,7 @@ class FormLegendField(models.Model):
     docs
     """
     user = models.ForeignKey(User)
-    form = models.ForeignKey('FormLegendForm')
+    form = models.ForeignKey('FormLegendForm', related_name='formLegendField')
     field_label = models.CharField(max_length=100)
     field_type = models.IntegerField(choices=formLegendField.DESCRIPTIONS)
     field_is_hidden = models.BooleanField(default=False)
@@ -24,8 +24,8 @@ class FormLegendField(models.Model):
         " themselves must have commas, please surround with grave accents "
         "(e.g. `dear, anonymous`, `hello, there`, howdy)."
     )
-    field_initial_value = models.CharField(max_length=100)
-    field_help_text = models.CharField(max_length=150)
+    field_initial_value = models.CharField(max_length=100, blank=True)
+    field_help_text = models.CharField(max_length=150, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -42,7 +42,7 @@ class FormLegendForm(models.Model):
     mores docs to come...
     """
     user = models.ForeignKey(User)
-    website = models.ForeignKey('FormLegendWebsite')
+    website = models.ForeignKey('FormLegendWebsite', related_name='formLegendWebsite')
     form_name = models.CharField(max_length=50)
     form_url = models.URLField()
     result_emailed = models.BooleanField()
@@ -74,15 +74,23 @@ class FormLegendForm(models.Model):
 
     def clean(self):
         """
-        Thid method override Model.clean() to make sure that each user
-        can only create 5 FormLegendForms.
+        Thid method override Model.clean() to make sure that each can
+        only create 3 FormLegenForms for each of their 5
+        FormLegendWebsites.
         """
-        new_form = self.__class__
-        if (new_form.objects.count() > 4):
+        try:
+            if (self.website.formLegendWebsite.all().count() > 2):
+                raise ValidationError(
+                    'Users may only create 3 %s per %s.' % (
+                        self._meta.verbose_name_plural,
+                        self.website._meta.verbose_name_plural
+                    )
+                )
+            super(FormLegendForm, self).clean()
+        except FormLegendWebsite.DoesNotExist:
             raise ValidationError(
-                "Users may only create 5 %s." % new_form.verbose_name_plural
+                'Please choose a website for this FormLegend Form'
             )
-        super(FormLegendForm, self).clean()
 
 
 class FormLegendWebsite(models.Model):
@@ -93,7 +101,6 @@ class FormLegendWebsite(models.Model):
     """
     user = models.ForeignKey(User)
     site_name = models.CharField(max_length=50)
-    # THINK OF A WAY TO VALIDATE domain_name as a Fully qualified domain name
     domain_name = models.CharField(max_length=100)
     date_created = models.DateTimeField(auto_now_add=True)
     website_slug = models.SlugField(editable=False)
@@ -123,6 +130,6 @@ class FormLegendWebsite(models.Model):
         new_website = self.__class__
         if (new_website.objects.count() > 4):
             raise ValidationError(
-                "Users may only create 5 %s." % new_website.verbose_name_plural
+                'Users may only create 5 %s.' % new_website.verbose_name_plural
             )
         super(FormLegendWebsite, self).clean()

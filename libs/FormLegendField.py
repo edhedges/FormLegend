@@ -2,6 +2,9 @@ from django import forms
 from django.forms.extras import SelectDateWidget
 
 """
+IMPORTANT: I have decided to remove File uploads for first release of
+FormLegend. It is just commented out for now.
+
 Constants for input types from:
 https://docs.djangoproject.com/en/1.4/ref/forms/fields/#built-in-field-classes
 https://docs.djangoproject.com/en/1.4/ref/forms/widgets/#built-in-widgets
@@ -11,16 +14,16 @@ TEXT = 2
 SELECT = 3
 DATE = 4
 DATETIME = 5
-FILE = 6
-SELECTMULTIPLE = 7
-HIDDEN = 8
-TIME = 9
-TEXTAREA = 10
-CHECKBOXMULTIPLE = 11
-RADIOMULTIPLE = 12
-EMAIL = 13
-DECIMAL = 14
-INTEGER = 15
+#FILE = 6
+SELECTMULTIPLE = 6
+HIDDEN = 7
+TIME = 8
+TEXTAREA = 9
+CHECKBOXMULTIPLE = 10
+RADIOMULTIPLE = 11
+EMAIL = 12
+DECIMAL = 13
+INTEGER = 14
 
 ### Also allow for different types of buttons ###
     # Submit, Cancel, Reset, Image button???
@@ -31,7 +34,7 @@ DESCRIPTIONS = (
     (SELECT, 'Single-Select List'),
     (DATE, 'Date YYYY/MM/DD'),
     (DATETIME, 'Date YYYY/MM/DD and Time HH:MM:SS'),
-    (FILE, 'File Upload'),
+    #(FILE, 'File Upload'),
     (SELECTMULTIPLE, 'Multi-Select List'),
     (HIDDEN, 'Hidden'),
     (TIME, 'Time HH:MM:SS'),
@@ -49,7 +52,7 @@ FORM_LEGEND_FIELDS = {
     SELECT: forms.ChoiceField,
     DATE: forms.DateField,
     DATETIME: forms.DateTimeField,
-    FILE: forms.FileField,
+    #FILE: forms.FileField,
     SELECTMULTIPLE: forms.MultipleChoiceField,
     HIDDEN: forms.CharField,
     TIME: forms.TimeField,

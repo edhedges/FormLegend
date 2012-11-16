@@ -14,7 +14,7 @@
       <p class="errors">Please correct the following errors:</p>
       <span class="errors">{{ form.non_field_errors }}</span>
       {% endif %}
-    <form method="post" action=".">
+    <form id="formLegendForm" method="post" action=".">
       {% csrf_token %}
       {% for field in form.visible_fields %}
       <div class="formElementGroup">
@@ -34,8 +34,26 @@
           {{ field|safe }}
         </div>
       {% endfor %}
-     <input class="formButton" onclick="submitClicked();" type="submit" value="Save Changes" />
-     <a href="{% url dashboard %}"><input class="formButton" type="button" value="Cancel" /></a>
+      {{ formLegendFormFormset.management_form }}
+        {% for formLegendField in formLegendFormFormset %}
+        <div class="formLegendField">
+          {{ formLegendField.id }}
+          {% for field in formLegendField.visible_fields %}
+          <div class="formElementGroup">
+            <label>{{ field.label|title }}</label>
+            {% if field.errors %}
+            <span class="errors">{{ field.errors }}</span>
+            {% endif %}
+            {% if field.help_text %}
+            <span class="help_text">{{ field.help_text }}</span>
+            {% endif %}
+            {{ field|safe }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+        <input class="formLegendFormButton firstButton" onclick="submitClicked();" type="submit" value="Update Form" />
+        <a href="{% url dashboard %}"><input class="formLegendFormButton" type="button" value="Cancel" /></a>
     </form>
   </div>
 </div>

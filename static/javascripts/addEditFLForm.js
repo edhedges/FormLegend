@@ -14,10 +14,10 @@ function resultEmailedCheckboxClicked() {
   var shownClassStr = 'formElementGroup', hiddenClassStr = 'hiddenFormElementGroup', classChangedStr = 'classWasChanged';
   if(isChecked) {
     $('.' + hiddenClassStr).addClass(classChangedStr + ' ' + shownClassStr).removeClass(hiddenClassStr);
-    $('input:hidden').prop('type', 'text');
+    $('.' + shownClassStr + ' input:hidden').prop('type', 'text');
   }
   else {
     $('.' + classChangedStr).addClass(hiddenClassStr).removeClass(shownClassStr + ' ' +  classChangedStr);
-    $('.' + hiddenClassStr + ' ' + 'input:text').prop('type', 'hidden');
+    $('.' + hiddenClassStr + ' input:text').prop('type', 'hidden');
   }
 }
