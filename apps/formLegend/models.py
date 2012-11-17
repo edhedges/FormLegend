@@ -11,7 +11,7 @@ class FormLegendField(models.Model):
     docs
     """
     user = models.ForeignKey(User)
-    form = models.ForeignKey('FormLegendForm', related_name='formLegendField')
+    form = models.ForeignKey('FormLegendForm', related_name='formLegendForm')
     field_label = models.CharField(max_length=100)
     field_type = models.IntegerField(choices=formLegendField.DESCRIPTIONS)
     field_is_hidden = models.BooleanField(default=False)
@@ -32,7 +32,25 @@ class FormLegendField(models.Model):
         verbose_name = 'FormLegend Field'
         verbose_name_plural = 'FormLegend Fields'
         db_table = 'FormLegend Field'
-        ordering = ['-date_created']
+        ordering = ['date_created']
+
+    def clean(self):
+        """
+        Thid method override Model.clean() to make sure that each can
+        only create 12 FormLegenFields for each of their 3
+        FormLegendForms for each of their 5 FormLegendWebsites.
+
+        This probably will not be called because the javascript should
+        prevent the user from creating more than 12 FormLegenFields.
+        """
+        if (self.form.formLegendForm.all().count() > 11):
+            raise ValidationError(
+                'Users may only create 11 %s per %s.' % (
+                    self._meta.verbose_name_plural,
+                    self.form._meta.verbose_name_plural
+                )
+            )
+        super(FormLegendField, self).clean()
 
 
 class FormLegendForm(models.Model):

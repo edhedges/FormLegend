@@ -1,12 +1,13 @@
 from django.http import HttpResponseRedirect
-from django.views.generic import TemplateView, CreateView, UpdateView,\
-    DeleteView
+from django.views.generic import TemplateView, CreateView, DetailView,\
+    UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.forms.models import inlineformset_factory
 
-from formLegend.models import FormLegendWebsite, FormLegendForm
-from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm,\
-    FormLegendFormFormSet
+from formLegend.models import FormLegendWebsite, FormLegendForm,\
+    FormLegendField
+from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm
 
 
 class LogInRequiredMixin(object):
@@ -36,14 +37,12 @@ class DashboardView(LogInRequiredMixin, TemplateView):
         This method makes sure to pass the correct context to the users
         dashboard. This includes their websites and forms.
         """
+        context = super(DashboardView, self).get_context_data(**kwargs)
         authenticated_user = self.request.user
         fl_websites = FormLegendWebsite.objects.filter(user=authenticated_user)
         fl_forms = FormLegendForm.objects.filter(user=authenticated_user)
-        context = super(DashboardView, self).get_context_data(**kwargs)
-        context.update({
-            'fl_websites': fl_websites,
-            'fl_forms': fl_forms
-        })
+        context['fl_websites'] = fl_websites
+        context['fl_forms'] = fl_forms
         return context
 
 
@@ -109,9 +108,19 @@ class AddFormView(LogInRequiredMixin, CreateView):
         This method overrides get_context_data and makes sure that if
         the user hasn't added any website than that is specified as well
         as passing formLegendFormFormSet so the user can add form fields
-        to their form.
+        to their form. Formset for FormLegendForm and FormLegendField
+        declared in view so the 'extra' parameter can be different for
+        Add and Edit.
         """
         context = super(AddFormView, self).get_context_data(**kwargs)
+        FormLegendFormFormSet = inlineformset_factory(
+            FormLegendForm,
+            FormLegendField,
+            can_delete=False,
+            extra=1,
+            max_num=12,
+            exclude=('user',)
+        )
         no_websites = True
         authenticated_user = self.request.user
         fl_websites = FormLegendWebsite.objects.filter(user=authenticated_user)
@@ -149,6 +158,28 @@ class AddFormView(LogInRequiredMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
+class ViewFormView(LogInRequiredMixin, DetailView):
+    """
+    docs
+    """
+    model = FormLegendForm
+    slug_field = 'form_slug'
+    template_name = 'formLegend/view_fl_form.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        docs
+        """
+        context = super(ViewFormView, self).get_context_data(**kwargs)
+        authenticated_user = self.request.user
+        form_fields = FormLegendField.objects.filter(
+            user=authenticated_user,
+            form=self.object
+        )
+        context['form_fields'] = form_fields
+        return context
+
+
 class EditFormView(LogInRequiredMixin, UpdateView):
     """
     docs
@@ -162,9 +193,19 @@ class EditFormView(LogInRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         """
         This method overrides get_context_data and passes
-        formLegendFormFormSet so the user can edit the form.
+        formLegendFormFormSet so the user can edit the form. Formset for
+        FormLegendForm and FormLegendField declared in view so the
+        'extra' parameter can be different for Add and Edit.
         """
         context = super(EditFormView, self).get_context_data(**kwargs)
+        FormLegendFormFormSet = inlineformset_factory(
+            FormLegendForm,
+            FormLegendField,
+            can_delete=False,
+            extra=0,
+            max_num=12,
+            exclude=('user',)
+        )
         if self.request.POST:
             context['formLegendFormFormset'] = FormLegendFormFormSet(self.request.POST, instance=self.object)
         else:

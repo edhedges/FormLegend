@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 
 from formLegend.views import DashboardView, AddWebsiteView, EditWebsiteView, \
-    DeleteWebsiteView, AddFormView, EditFormView, DeleteFormView
+    DeleteWebsiteView, AddFormView, ViewFormView, EditFormView, DeleteFormView
 
 from registration.views import activate
 from registration.views import register
@@ -90,6 +90,7 @@ urlpatterns += patterns('',
     url(r'^websites/edit/(?P<slug>[-\w]+)/$', EditWebsiteView.as_view(), name='edit_fl_website'),
     url(r'^websites/delete/(?P<slug>[-\w]+)/$', DeleteWebsiteView.as_view(), name='delete_fl_website'),
     url(r'^forms/add/$', AddFormView.as_view(), name='add_fl_form'),
+    url(r'^forms/view/(?P<slug>[-\w]+)/$', ViewFormView.as_view(), name='view_fl_form'),
     url(r'^forms/edit/(?P<slug>[-\w]+)/$', EditFormView.as_view(), name='edit_fl_form'),
     url(r'^forms/delete/(?P<slug>[-\w]+)/$', DeleteFormView.as_view(), name='delete_fl_form'),
 )

@@ -1,8 +1,6 @@
 from django import forms
-from django.forms.models import inlineformset_factory
 
-from formLegend.models import FormLegendWebsite, FormLegendForm,\
-    FormLegendField
+from formLegend.models import FormLegendWebsite, FormLegendForm
 
 
 class FormLegendWebsiteForm(forms.ModelForm):
@@ -54,12 +52,3 @@ class FormLegendFormForm(forms.ModelForm):
         else:
             pass
         return cleaned_data
-
-# Formset declared to tie a FormLegendField into a FormLegendForm
-FormLegendFormFormSet = inlineformset_factory(
-    FormLegendForm,
-    FormLegendField,
-    can_delete=False,
-    extra=1,
-    exclude=('user',)
-)

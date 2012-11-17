@@ -159,6 +159,16 @@ form {
   width: 221px;
 }
 
+.addFieldButton {
+  width: 200px;
+  margin: 20px 0 20px 73px;
+}
+
+.deleteFieldButton {
+  width: 200px;
+  margin: 17px 0 25px 56px;
+}
+
 .firstButton {
   margin-top: 25px;
 }

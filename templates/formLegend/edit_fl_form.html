@@ -2,7 +2,6 @@
 
 {% block title %}Edit Existing FormLegend Form{% endblock title %}
 
-
 {% block content %}
 <div class="row">
   <h2>Edit Existing FormLegend Form</h2>
@@ -52,6 +51,7 @@
           {% endfor %}
         </div>
         {% endfor %}
+        <input class="addFieldButton" onclick="addFieldClicked()" type="button" value="Add A Field" />
         <input class="formLegendFormButton firstButton" onclick="submitClicked();" type="submit" value="Update Form" />
         <a href="{% url dashboard %}"><input class="formLegendFormButton" type="button" value="Cancel" /></a>
     </form>
