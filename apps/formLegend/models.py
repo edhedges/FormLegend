@@ -6,6 +6,21 @@ from django.template.defaultfilters import slugify
 import formLegendField
 
 
+class DynamicFormLegendForm(models.Model):
+    user = models.ForeignKey(User)
+    fl_form = models.OneToOneField('FormLegendForm', related_name='formLegendFormD')
+    form_key = models.CharField(max_length=50, blank=True)
+    form_script = models.TextField(blank=True)
+    form_html = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Dynamic FormLegend Form'
+        verbose_name_plural = 'Dynamic FormLegend Forms'
+        db_table = 'Dynamic FormLegend Form'
+        ordering = ['-date_created']
+
+
 class FormLegendField(models.Model):
     """
     docs
@@ -43,14 +58,15 @@ class FormLegendField(models.Model):
         This probably will not be called because the javascript should
         prevent the user from creating more than 12 FormLegenFields.
         """
-        if (self.form.formLegendForm.all().count() > 11):
-            raise ValidationError(
-                'Users may only create 11 %s per %s.' % (
-                    self._meta.verbose_name_plural,
-                    self.form._meta.verbose_name_plural
+        if not self.pk:
+            if (self.form.formLegendForm.all().count() > 11):
+                raise ValidationError(
+                    'Users may only create 11 %s per %s.' % (
+                        self._meta.verbose_name_plural,
+                        self.form._meta.verbose_name_plural
+                    )
                 )
-            )
-        super(FormLegendField, self).clean()
+            super(FormLegendField, self).clean()
 
 
 class FormLegendForm(models.Model):
@@ -93,22 +109,23 @@ class FormLegendForm(models.Model):
     def clean(self):
         """
         Thid method override Model.clean() to make sure that each can
-        only create 3 FormLegenForms for each of their 5
+        only create 3 FormLegendForms for each of their 5
         FormLegendWebsites.
         """
-        try:
-            if (self.website.formLegendWebsite.all().count() > 2):
-                raise ValidationError(
-                    'Users may only create 3 %s per %s.' % (
-                        self._meta.verbose_name_plural,
-                        self.website._meta.verbose_name_plural
+        if not self.pk:
+            try:
+                if (self.website.formLegendWebsite.all().count() > 2):
+                    raise ValidationError(
+                        'Users may only create 3 %s per %s.' % (
+                            self._meta.verbose_name_plural,
+                            self.website._meta.verbose_name
+                        )
                     )
+                super(FormLegendForm, self).clean()
+            except FormLegendWebsite.DoesNotExist:
+                raise ValidationError(
+                    'Please choose a website for this FormLegend Form'
                 )
-            super(FormLegendForm, self).clean()
-        except FormLegendWebsite.DoesNotExist:
-            raise ValidationError(
-                'Please choose a website for this FormLegend Form'
-            )
 
 
 class FormLegendWebsite(models.Model):
@@ -145,9 +162,10 @@ class FormLegendWebsite(models.Model):
         Thid method override Model.clean() to make sure that each user
         can only create 5 FormLegendWebsites.
         """
-        new_website = self.__class__
-        if (new_website.objects.count() > 4):
-            raise ValidationError(
-                'Users may only create 5 %s.' % new_website.verbose_name_plural
-            )
-        super(FormLegendWebsite, self).clean()
+        if not self.pk:
+            new_website = self.__class__
+            if (new_website.objects.count() > 4):
+                raise ValidationError(
+                    'Users may only create 5 %s.' % self._meta.verbose_name_plural
+                )
+            super(FormLegendWebsite, self).clean()

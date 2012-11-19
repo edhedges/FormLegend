@@ -46,6 +46,9 @@ DESCRIPTIONS = (
     (INTEGER, 'Integer'),
 )
 
+"""
+Key value pairs of fields
+"""
 FORM_LEGEND_FIELDS = {
     CHECKBOX: forms.BooleanField,
     TEXT: forms.CharField,

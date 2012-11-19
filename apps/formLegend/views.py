@@ -1,13 +1,76 @@
 from django.http import HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView, CreateView, DetailView,\
     UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.forms import fields
 from django.forms.models import inlineformset_factory
 
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
-    FormLegendField
-from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm
+    FormLegendField, DynamicFormLegendForm
+from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm,\
+    DynamicFormLegendFormForm
+
+import formLegendField
+
+
+def saveDynamicFormLegendForm(authenticated_user, form_legend_form):
+    """
+    docs
+    """
+    form_fields = FormLegendField.objects.filter(
+        user=authenticated_user,
+        form=form_legend_form
+    )
+    field_list = createFieldList(form_fields)
+    form_instance = DynamicFormLegendFormForm(field_list)
+    form_html = generateFormHtml(form_instance)
+    df_obj, df_was_created = DynamicFormLegendForm.objects.get_or_create(
+        user=authenticated_user,
+        fl_form=form_legend_form
+    )
+    df_obj.form_html = form_html
+    if df_was_created:
+        df_obj.form_key = authenticated_user.username + str(df_obj.pk)
+        df_obj.form_script = "<script type='text/javascript'>var fl_form_key = %s;</script>" % df_obj.form_key
+    df_obj.save()
+
+
+def createFieldList(form_fields):
+    """
+    docs
+    """
+    field_list = []
+    for field in form_fields:
+        field_label = field.field_label.lower().replace(' ', '_')
+        field_class = formLegendField.FORM_LEGEND_FIELDS[field.field_type]
+        field_instance = getattr(fields, field_class.__name__)()
+        field_list.append(DynamicFormField(field.field_type, field_label, field_instance))
+    return field_list
+
+
+def generateFormHtml(form_instance):
+    """
+    docs
+    """
+    form_html_components = []
+    form_html_components.append("<form method='post' action='.'>")
+    form_html_components.append(form_instance.as_p())
+    form_html_components.append("<input type='submit' value='Submit' />")
+    form_html_components.append("</form>")
+    form_html = ''.join(form_html_components)
+    return form_html
+
+
+class DynamicFormField(object):
+    """
+    docs
+    """
+    def __init__(self, field_type, field_label, field_class):
+        self.field_type = field_type
+        self.field_label = field_label
+        self.field_class = field_class
 
 
 class LogInRequiredMixin(object):
@@ -150,6 +213,7 @@ class AddFormView(LogInRequiredMixin, CreateView):
                 field_form.user = self.request.user
                 field_form.form_id = fl_form_form.pk
                 field_form.save()
+            saveDynamicFormLegendForm(self.request.user, fl_form_form)
             return HttpResponseRedirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -171,12 +235,6 @@ class ViewFormView(LogInRequiredMixin, DetailView):
         docs
         """
         context = super(ViewFormView, self).get_context_data(**kwargs)
-        authenticated_user = self.request.user
-        form_fields = FormLegendField.objects.filter(
-            user=authenticated_user,
-            form=self.object
-        )
-        context['form_fields'] = form_fields
         return context
 
 
@@ -229,6 +287,7 @@ class EditFormView(LogInRequiredMixin, UpdateView):
                 field_form.user = self.request.user
                 field_form.form_id = fl_form_form.pk
                 field_form.save()
+            saveDynamicFormLegendForm(self.request.user, fl_form_form)
             return HttpResponseRedirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(form=form))

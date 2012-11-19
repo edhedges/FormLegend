@@ -2,6 +2,31 @@ from django import forms
 
 from formLegend.models import FormLegendWebsite, FormLegendForm
 
+import formLegendField
+
+
+class DynamicFormLegendFormForm(forms.Form):
+    """
+    docs
+    """
+    def __init__(self, field_list, *args, **kwargs):
+        """
+        docs
+        """
+        super(DynamicFormLegendFormForm, self).__init__(*args, **kwargs)
+        for field in field_list:
+            if(field.field_type in formLegendField.FORM_LEGEND_WIDGETS):
+                widget_class = formLegendField.FORM_LEGEND_WIDGETS[field.field_type]
+                if widget_class.__name__ == 'SelectDateWidget':
+                    self.fields[field.field_label] = field.field_class
+                    widget_instance = getattr(forms.extras, widget_class.__name__)()
+                else:
+                    self.fields[field.field_label] = field.field_class
+                    widget_instance = getattr(forms.widgets, widget_class.__name__)()
+                self.fields[field.field_label].widget = widget_instance
+            else:
+                self.fields[field.field_label] = field.field_class
+
 
 class FormLegendWebsiteForm(forms.ModelForm):
     """
