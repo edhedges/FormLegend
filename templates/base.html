@@ -18,6 +18,10 @@
     <!-- Extra styles -->
     {% block extra_styles %}{% endblock extra_styles %}
     {% endcompress %}
+    {% compress js %}
+    <!-- Custom js files that need to be in head will go here. -->
+    {% block custom_head_js %}{% endblock custom_head_js %}
+    {% endcompress %}
     <!-- Page title -->
     <title>FormLegend - {% block title %}{% endblock title %}</title>
 </head>
@@ -63,11 +67,11 @@
     {% block custom_js %}{% endblock custom_js %}
     {% endcompress %}
     <!-- The script below is used for google analytics -->
-    <script type="text/javascript">
+    <!--<script type="text/javascript">
         var _gaq=[['_setAccount','MY_SITES_ID'],['_trackPageview']]; // Change MY_SITES_ID to be your site's ID
         (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
         g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
         s.parentNode.insertBefore(g,s)}(document,'script'));
-    </script>
+    </script>-->
 </body>
 </html>

@@ -224,3 +224,17 @@ form {
     border-bottom: 1px solid #333;
   }
 }
+code {
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 10px;
+  padding: 2px;
+}
+pre {
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 10px;
+  padding: 5px;
+}

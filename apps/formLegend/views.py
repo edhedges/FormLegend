@@ -33,7 +33,8 @@ def saveDynamicFormLegendForm(authenticated_user, form_legend_form):
     df_obj.form_html = form_html
     if df_was_created:
         df_obj.form_key = authenticated_user.username + str(df_obj.pk)
-        df_obj.form_script = "<script type='text/javascript'>var fl_form_key = %s;</script>" % df_obj.form_key
+        df_obj.form_script = generateUserFormScript(df_obj.form_key)
+    df_obj.form_script = generateUserFormScript(df_obj.form_key)
     df_obj.save()
 
 
@@ -61,6 +62,26 @@ def generateFormHtml(form_instance):
     form_html_components.append("</form>")
     form_html = ''.join(form_html_components)
     return form_html
+
+
+def generateUserFormScript(form_key):
+    """
+    docs
+    """
+    form_script_components = []
+    form_script_components.append("<div id='form_legend_form'></div>\n")
+    form_script_components.append("<script type='text/javascript'>\n")
+    form_script_components.append("  var form_legend_form_key = %s;\n" % form_key)
+    form_script_components.append("  (function() {\n")
+    form_script_components.append("    var fl_script = document.createElement('script'); fl_script.type = 'text/javascript'; fl_script.async = true;\n")
+    form_script_components.append("    fl_script.src = 'http://127.0.0.1:8000/form-script/" + form_key + "/fl.js';\n")
+    form_script_components.append("    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(fl_script);\n")
+    form_script_components.append("  })();\n")
+    form_script_components.append("</script>\n")
+    form_script_components.append("<noscript>Please enable javascript to view the Form.</noscript>\n")
+    form_script_components.append("<p>Form powered by <a href='http://edhedges.com/'>FormLegend</a></p>\n")
+    form_script = ''.join(form_script_components)
+    return form_script
 
 
 class DynamicFormField(object):
@@ -222,19 +243,28 @@ class AddFormView(LogInRequiredMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class ViewFormView(LogInRequiredMixin, DetailView):
+class InstallFormView(LogInRequiredMixin, DetailView):
     """
     docs
     """
     model = FormLegendForm
     slug_field = 'form_slug'
-    template_name = 'formLegend/view_fl_form.html'
+    template_name = 'formLegend/install_fl_form.html'
 
     def get_context_data(self, **kwargs):
         """
         docs
         """
-        context = super(ViewFormView, self).get_context_data(**kwargs)
+        context = super(InstallFormView, self).get_context_data(**kwargs)
+        authenticated_user = self.request.user
+        try:
+            fl_form_info = DynamicFormLegendForm.objects.get(
+                user=authenticated_user,
+                fl_form=self.object
+            )
+        except DynamicFormLegendForm.DoesNotExist:
+            fl_form_info = 'No information available.'
+        context['fl_form_info'] = fl_form_info
         return context
 
 
