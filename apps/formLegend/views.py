@@ -1,8 +1,9 @@
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView, CreateView, DetailView,\
-    UpdateView, DeleteView
+    UpdateView, DeleteView, RedirectView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.forms import fields
 from django.forms.models import inlineformset_factory
@@ -32,9 +33,8 @@ def saveDynamicFormLegendForm(authenticated_user, form_legend_form):
     )
     df_obj.form_html = form_html
     if df_was_created:
-        df_obj.form_key = authenticated_user.username + str(df_obj.pk)
+        df_obj.form_key = authenticated_user.username + "-" + str(df_obj.pk)
         df_obj.form_script = generateUserFormScript(df_obj.form_key)
-    df_obj.form_script = generateUserFormScript(df_obj.form_key)
     df_obj.save()
 
 
@@ -69,12 +69,12 @@ def generateUserFormScript(form_key):
     docs
     """
     form_script_components = []
-    form_script_components.append("<div id='form_legend_form'></div>\n")
+    form_script_components.append("<div id='fl_form' class='%s'></div>\n" % form_key)
     form_script_components.append("<script type='text/javascript'>\n")
-    form_script_components.append("  var form_legend_form_key = %s;\n" % form_key)
+    form_script_components.append("  var fl_form_key = '%s';\n" % form_key)
     form_script_components.append("  (function() {\n")
     form_script_components.append("    var fl_script = document.createElement('script'); fl_script.type = 'text/javascript'; fl_script.async = true;\n")
-    form_script_components.append("    fl_script.src = 'http://127.0.0.1:8000/form-script/" + form_key + "/fl.js';\n")
+    form_script_components.append("    fl_script.src = 'http://127.0.0.1:8000/form-script/' + fl_form_key + '/fl.js';\n")
     form_script_components.append("    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(fl_script);\n")
     form_script_components.append("  })();\n")
     form_script_components.append("</script>\n")
@@ -334,3 +334,68 @@ class DeleteFormView(LogInRequiredMixin, DeleteView):
     slug_field = 'form_slug'
     template_name = 'formLegend/delete_fl_form.html'
     success_url = '/dashboard/'
+
+
+class JSRedirectView(RedirectView):
+    """
+    docs
+    """
+    def get_redirect_url(self, **kwargs):
+        """
+        docs
+        """
+        self.url = '/static/javascripts/fl.js'
+        error_url = '/static/javascripts/flerr.js'
+        df_key = kwargs['slug']
+        df_key_tup = df_key.partition('-')
+        df_user_name = df_key_tup[0]
+        fl_form_id = df_key_tup[2]
+        referer_url = self.request.META['HTTP_REFERER']
+        try:
+            user_obj = User.objects.get(username=df_user_name)
+        except User.DoesNotExist:
+            return error_url
+        try:
+            df_obj = DynamicFormLegendForm.objects.get(
+                user=user_obj,
+                fl_form=fl_form_id,
+                form_key=df_key
+            )
+        except:
+            return error_url
+        fl_form_url = df_obj.fl_form.form_url
+        if referer_url == fl_form_url:
+            return self.url
+        else:
+            return error_url
+
+
+class FormLegendProviderView(TemplateView):
+    """
+    docs
+    """
+    template_name = 'formLegend/form_provider.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        docs
+        """
+        context = super(FormLegendProviderView, self).get_context_data(**kwargs)
+        df_key = kwargs['slug']
+        df_key_tup = df_key.partition('-')
+        df_user_name = df_key_tup[0]
+        fl_form_id = df_key_tup[2]
+        try:
+            user_obj = User.objects.get(username=df_user_name)
+        except User.DoesNotExist:
+            context['fl_error'] = 'User does not exist'
+        try:
+            df_obj = DynamicFormLegendForm.objects.get(
+                user=user_obj,
+                fl_form=fl_form_id,
+                form_key=df_key
+            )
+            context['form_html'] = df_obj.form_html
+        except:
+            context['fl_error'] = 'Form does not exist'
+        return context

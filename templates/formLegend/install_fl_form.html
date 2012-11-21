@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 
-{% block custom_head_js %}
-<script type="text/javascript" src="{{ STATIC_URL }}javascripts/easyXDM/easyXDM.debug.js"></script>
-{% endblock custom_head_js %}
-
 {% block title %}Install Existing FormLegend Form{% endblock title %}
 
 {% block content %}
@@ -14,19 +10,9 @@
 <div class="row">
   <div class="offset-by-one fourteen columns">
     <h4>Install {{ object.form_name }}</h4>
-    <p>Installing your {{ object.form_name }} is as easy as placing the following markup before your pages <code>&lt;/body&gt;</code> tag:</p>
+    <p>Installing your {{ object.form_name }} is as easy as placing the following markup where you would like your form to render on its corresponding url: <code>{{ object.form_url }}</code>.</p>
+    <p>Any modifications to the markup could cause errors in the rendering and/or functionality of the form.</p>
     <pre>{{ fl_form_info.form_script }}</pre>
   </div>
 </div>
 {% endblock content %}
-
-{% block custom_js %}
-<script type="text/javascript">
-var socket = new easyXDM.Socket({
-    onMessage: function(message, origin){
-        alert("Received '" + message + "' from '" + origin + "'");
-        socket.postMessage("Indeed it does!");
-    }
-});
-</script>
-{% endblock custom_js %}

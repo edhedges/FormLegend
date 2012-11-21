@@ -9,7 +9,7 @@ import formLegendField
 class DynamicFormLegendForm(models.Model):
     user = models.ForeignKey(User)
     fl_form = models.OneToOneField('FormLegendForm', related_name='flFormOneToOne')
-    form_key = models.CharField(max_length=50, blank=True)
+    form_key = models.SlugField(max_length=50, blank=True)
     form_script = models.TextField(blank=True)
     form_html = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)

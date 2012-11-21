@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <title>FormLegend Form Provider</title>
+    <script type="text/javascript" src="{{ STATIC_URL }}javascripts/easyxdm/easyXDM.debug.js"></script>
+  </head>
+  <body>
+  {% if form_html %}
+  {% autoescape off %}
+  {{ form_html }}
+  {% endautoescape %}
+  {% elif fl_error %}
+  {{ fl_error }}
+  {% endif %}
+  <script type="text/javascript">
+    var socket = new easyXDM.Socket({
+      onMessage: function(message, origin) {
+        alert("Received '" + message + "' from '" + origin + "'");
+        socket.postMessage("Indeed it does!");
+      }
+    });
+  </script>
+  </body>
+</html>
