@@ -1,20 +1,35 @@
 from django import forms
 
-from formLegend.models import FormLegendWebsite, FormLegendForm
+from formLegend.models import FormLegendWebsite, FormLegendForm,\
+    FormLegendFormData
 
 import formLegendField
+
+
+class FormLegendFormDataForm(forms.ModelForm):
+    """
+    docs
+    """
+    class Meta:
+        model = FormLegendFormData
+        exclude = ('user', 'fl_form', 'form_key', 'date_created')
 
 
 class DynamicFormLegendFormForm(forms.Form):
     """
     docs
+    THIS MUST BE FIXED
     """
     def __init__(self, field_list, *args, **kwargs):
         """
-        docs
+        FIX THIS SHIT YO
         """
         super(DynamicFormLegendFormForm, self).__init__(*args, **kwargs)
         for field in field_list:
+            print field.field_type
+            print field.field_label
+            print field.field_class
+            print field.is_required
             if(field.field_type in formLegendField.FORM_LEGEND_WIDGETS):
                 widget_class = formLegendField.FORM_LEGEND_WIDGETS[field.field_type]
                 if widget_class.__name__ == 'SelectDateWidget':
@@ -26,6 +41,8 @@ class DynamicFormLegendFormForm(forms.Form):
                 self.fields[field.field_label].widget = widget_instance
             else:
                 self.fields[field.field_label] = field.field_class
+            if field.is_required:
+                self.fields[field.field_label].widget.attrs['class'] = 'required_field'
 
 
 class FormLegendWebsiteForm(forms.ModelForm):

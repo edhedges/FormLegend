@@ -1,17 +1,18 @@
-from django.http import HttpResponseRedirect
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic import TemplateView, CreateView, DetailView,\
-    UpdateView, DeleteView, RedirectView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.utils.decorators import method_decorator
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import fields
 from django.forms.models import inlineformset_factory
+from django.http import HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView, CreateView, DetailView,\
+    UpdateView, DeleteView, RedirectView
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
-    FormLegendField, DynamicFormLegendForm
+    FormLegendField, DynamicFormLegendForm, FormLegendFormData
 from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm,\
-    DynamicFormLegendFormForm
+    DynamicFormLegendFormForm, FormLegendFormDataForm
 
 import formLegendField
 
@@ -26,7 +27,12 @@ def saveDynamicFormLegendForm(authenticated_user, form_legend_form):
     )
     field_list = createFieldList(form_fields)
     form_instance = DynamicFormLegendFormForm(field_list)
+    print 'form_instance'
+    print form_instance
+    print 'form_instance as p'
+    print form_instance.as_p()
     form_html = generateFormHtml(form_instance)
+    print 'form html' + form_html
     df_obj, df_was_created = DynamicFormLegendForm.objects.get_or_create(
         user=authenticated_user,
         fl_form=form_legend_form
@@ -47,7 +53,10 @@ def createFieldList(form_fields):
         field_label = field.field_label.lower().replace(' ', '_')
         field_class = formLegendField.FORM_LEGEND_FIELDS[field.field_type]
         field_instance = getattr(fields, field_class.__name__)()
-        field_list.append(DynamicFormField(field.field_type, field_label, field_instance))
+        if field.field_is_required:
+            field_list.append(DynamicFormField(field.field_type, field_label, field_instance, True))
+        else:
+            field_list.append(DynamicFormField(field.field_type, field_label, field_instance, False))
     return field_list
 
 
@@ -56,9 +65,9 @@ def generateFormHtml(form_instance):
     docs
     """
     form_html_components = []
-    form_html_components.append("<form method='post' action='.'>")
+    form_html_components.append("<form>")
     form_html_components.append(form_instance.as_p())
-    form_html_components.append("<input type='submit' value='Submit' />")
+    form_html_components.append("<input type='button' onclick='submitFLForm(this)' value='Submit' />")
     form_html_components.append("</form>")
     form_html = ''.join(form_html_components)
     return form_html
@@ -78,8 +87,7 @@ def generateUserFormScript(form_key):
     form_script_components.append("    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(fl_script);\n")
     form_script_components.append("  })();\n")
     form_script_components.append("</script>\n")
-    form_script_components.append("<noscript>Please enable javascript to view the Form.</noscript>\n")
-    form_script_components.append("<p>Form powered by <a href='http://edhedges.com/'>FormLegend</a></p>\n")
+    form_script_components.append("<noscript>Please enable javascript to view the Form.</noscript>")
     form_script = ''.join(form_script_components)
     return form_script
 
@@ -88,15 +96,17 @@ class DynamicFormField(object):
     """
     docs
     """
-    def __init__(self, field_type, field_label, field_class):
+    def __init__(self, field_type, field_label, field_class, is_required):
         self.field_type = field_type
         self.field_label = field_label
         self.field_class = field_class
+        self.is_required = is_required
 
 
 class LogInRequiredMixin(object):
     """
-    Class view that can be inherited to require a user be logged in.
+    Class view mixin that can be inherited to require a user be logged
+    in.
     """
 
     @method_decorator(login_required)
@@ -108,6 +118,24 @@ class LogInRequiredMixin(object):
         are redirected to the LOGIN_URL in settings.py.
         """
         return super(LogInRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+class XFrameExemptMixin(object):
+    """
+    Class view mixin that can be inherited to exempt a view from xframe
+    restriction brought on by XFrameOptionsMiddleware.
+    """
+
+    @method_decorator(xframe_options_exempt)
+    def dispatch(self, *args, **kwargs):
+        """
+        This method is decorated with the xframe_options_exempt method
+        decorator that makes sure specific views/templates are exempt
+        from the xframe restrictions brought on by djangos
+        XFrameOptionsMiddleware. This is used by views that do cross
+        domain and iframe talking.
+        """
+        return super(XFrameExemptMixin, self).dispatch(*args, **kwargs)
 
 
 class DashboardView(LogInRequiredMixin, TemplateView):
@@ -201,7 +229,7 @@ class AddFormView(LogInRequiredMixin, CreateView):
             FormLegendForm,
             FormLegendField,
             can_delete=False,
-            extra=1,
+            extra=0,
             max_num=12,
             exclude=('user',)
         )
@@ -234,6 +262,8 @@ class AddFormView(LogInRequiredMixin, CreateView):
                 field_form.user = self.request.user
                 field_form.form_id = fl_form_form.pk
                 field_form.save()
+            print fl_form_form.pk
+            print fl_form_form
             saveDynamicFormLegendForm(self.request.user, fl_form_form)
             return HttpResponseRedirect(self.success_url)
         else:
@@ -289,7 +319,6 @@ class EditFormView(LogInRequiredMixin, UpdateView):
         FormLegendFormFormSet = inlineformset_factory(
             FormLegendForm,
             FormLegendField,
-            can_delete=False,
             extra=0,
             max_num=12,
             exclude=('user',)
@@ -336,10 +365,11 @@ class DeleteFormView(LogInRequiredMixin, DeleteView):
     success_url = '/dashboard/'
 
 
-class JSRedirectView(RedirectView):
+class JSRedirectView(XFrameExemptMixin, RedirectView):
     """
     docs
     """
+
     def get_redirect_url(self, **kwargs):
         """
         docs
@@ -361,7 +391,7 @@ class JSRedirectView(RedirectView):
                 fl_form=fl_form_id,
                 form_key=df_key
             )
-        except:
+        except DynamicFormLegendForm.DoesNotExist:
             return error_url
         fl_form_url = df_obj.fl_form.form_url
         if referer_url == fl_form_url:
@@ -370,32 +400,58 @@ class JSRedirectView(RedirectView):
             return error_url
 
 
-class FormLegendProviderView(TemplateView):
+class FormLegendProviderView(XFrameExemptMixin, CreateView):
     """
     docs
     """
+    model = FormLegendFormData
+    form_class = FormLegendFormDataForm
     template_name = 'formLegend/form_provider.html'
+    success_url = '/provider/success-url/'
 
     def get_context_data(self, **kwargs):
         """
         docs
         """
         context = super(FormLegendProviderView, self).get_context_data(**kwargs)
-        df_key = kwargs['slug']
+        df_slug = self.request.path.partition('/provider/')
+        df_key = df_slug[2][:-1]
         df_key_tup = df_key.partition('-')
         df_user_name = df_key_tup[0]
         fl_form_id = df_key_tup[2]
-        try:
-            user_obj = User.objects.get(username=df_user_name)
-        except User.DoesNotExist:
-            context['fl_error'] = 'User does not exist'
-        try:
-            df_obj = DynamicFormLegendForm.objects.get(
-                user=user_obj,
-                fl_form=fl_form_id,
-                form_key=df_key
-            )
-            context['form_html'] = df_obj.form_html
-        except:
-            context['fl_error'] = 'Form does not exist'
-        return context
+        if fl_form_id == 'url':
+            print 'form submission successful'
+            # need to handle for result being emailed
+            context['success'] = 'Form submission success'
+            return context
+        else:
+            try:
+                user_obj = User.objects.get(username=df_user_name)
+                context['user_obj'] = user_obj
+            except User.DoesNotExist:
+                context['fl_error'] = 'User does not exist'
+            try:
+                df_obj = DynamicFormLegendForm.objects.get(
+                    user=user_obj,
+                    fl_form=fl_form_id,
+                    form_key=df_key
+                )
+                context['df_obj'] = df_obj
+            except:
+                context['fl_error'] = 'Form does not exist'
+            return context
+
+    def form_valid(self, form):
+        """
+        docs
+        """
+        context = self.get_context_data()
+        user_obj = context['user_obj']
+        user_form = form.save(commit=False)
+        user_form.user = user_obj
+        df_obj = context['df_obj']
+        user_form.fl_form = df_obj
+        user_form.save()
+        print 'form submission saved'
+            # need to handle for result being emailed
+        return super(FormLegendProviderView, self).form_valid(form)

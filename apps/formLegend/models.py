@@ -6,7 +6,26 @@ from django.template.defaultfilters import slugify
 import formLegendField
 
 
+class FormLegendFormData(models.Model):
+    """
+    docs
+    """
+    user = models.ForeignKey(User)
+    fl_form = models.ForeignKey('DynamicFormLegendForm', related_name='dynamicFormLegendForm')
+    form_data = models.TextField()
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'FormLegend Form Data'
+        verbose_name_plural = 'FormLegend Forms Data'
+        db_table = 'FormLegend Form Data'
+        ordering = ['-date_created']
+
+
 class DynamicFormLegendForm(models.Model):
+    """
+    docs
+    """
     user = models.ForeignKey(User)
     fl_form = models.OneToOneField('FormLegendForm', related_name='flFormOneToOne')
     form_key = models.SlugField(max_length=50, blank=True)
@@ -152,6 +171,8 @@ class FormLegendWebsite(models.Model):
         This method overrides djangos Model.save() to make sure the slug
         only gets created once to avoid broken urls. Then it calls the
         regular Model.save() method via super to retain functionality.
+
+        FIX THIS SO THAT TWO WEBSITES CANT HAVE SAME SLUG
         """
         if not self.id:
             self.website_slug = slugify(self.site_name)

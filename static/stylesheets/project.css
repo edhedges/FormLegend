@@ -241,3 +241,11 @@ pre {
   padding: 8px;
   margin-bottom: 25px;
 }
+
+.hideMe {
+  visibility: hidden;
+  position: absolute;
+}
+
+
+.forgotPasswordLink { display: block; text-align: center; margin-bottom: 10px; }

@@ -1,24 +1,46 @@
 <!doctype html>
 <html>
-  <head>
-    <title>FormLegend Form Provider</title>
-    <script type="text/javascript" src="{{ STATIC_URL }}javascripts/easyxdm/easyXDM.debug.js"></script>
-  </head>
-  <body>
-  {% if form_html %}
-  {% autoescape off %}
-  {{ form_html }}
-  {% endautoescape %}
-  {% elif fl_error %}
-  {{ fl_error }}
-  {% endif %}
-  <script type="text/javascript">
-    var socket = new easyXDM.Socket({
-      onMessage: function(message, origin) {
-        alert("Received '" + message + "' from '" + origin + "'");
-        socket.postMessage("Indeed it does!");
-      }
-    });
-  </script>
-  </body>
+    <head>
+        <title>FormLegend Provider</title>
+        <!-- This should be changed so that it points to the minified version before use in production. -->
+        <script type="text/javascript" src="{{ STATIC_URL }}javascripts/easyxdm/easyXDM.debug.js"></script>
+    </head>
+    <body>
+      {% if success %}
+      {{ success }}
+      {% else %}
+      {% if df_obj.form_html %}
+      {% autoescape off %}
+      {{ df_obj.form_html }}
+      {% endautoescape %}
+      {% elif fl_error %}
+      {{ fl_error }}
+      {% endif %}
+
+      <span style="display: none">
+        <form id="fl_form_data_form" method="post" action=".">
+        {% csrf_token %}
+        {{ form }}
+        </form>
+      </span>
+      {% endif %}
+      <!-- jQuery from google or fallback onto local download -->
+      <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+      <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}javascripts/libs/jquery-1.8.0.min.js"%3E%3C/script%3E'))</script>
+      <script type="text/javascript">
+        var socket = new easyXDM.Socket({});
+        /* docs */
+        function submitFLForm(submitButton) {
+          var fl_form = submitButton.form, form_data = 'BEGIN\n', form_data_form = $('#fl_form_data_form');
+          $(fl_form).children('p').each(function() {
+            form_data += $(this).children('label').text();
+            form_data += $(this).children(':nth-child(2)').val() + '\n';
+          });
+          form_data += 'END';
+          $(form_data_form).children('textarea').val(form_data);
+          $(form_data_form).submit();
+          socket.postMessage('destroySocket');
+        }
+      </script>
+    </body>
 </html>

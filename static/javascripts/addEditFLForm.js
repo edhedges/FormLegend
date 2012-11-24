@@ -3,8 +3,8 @@ $(document).ready(function() {
   resultEmailedCheckboxClicked();
   var fieldCount = $('.formLegendField').length;
   var deleteFieldButton = "<input class='deleteFieldButton' onclick='deleteFieldClicked(this)' type='button' value='Delete Field' />";
-  $('.formLegendField').each(function(i)  {
-    if(i > 0) $(deleteFieldButton).appendTo($(this));
+  $('.formLegendField').each(function()  {
+    $(deleteFieldButton).appendTo($(this));
   });
 });
 
@@ -61,15 +61,15 @@ function addFieldClicked() {
         "</select>" +
       "</div>" +
       "<div class='formElementGroup'>" +
-        "<label>Field Is Hidden</label>" +
+        "<label>Field Is Hidden&nbsp;</label>" +
         "<input type='checkbox' name='formLegendForm-" + fieldCount + "-field_is_hidden' id='id_formLegendForm-" + fieldCount + "-field_is_hidden'>" +
       "</div>" +
       "<div class='formElementGroup'>" +
-        "<label>Field Is Required</label>" +
+        "<label>Field Is Required&nbsp;</label>" +
         "<input checked='checked' type='checkbox' name='formLegendForm-" + fieldCount + "-field_is_required' id='id_formLegendForm-" + fieldCount + "-field_is_required'>" +
       "</div>" +
       "<div class='formElementGroup'>" +
-        "<label>Field Has Choices</label>" +
+        "<label>Field Has Choices&nbsp;</label>" +
         "<input type='checkbox' name='formLegendForm-" + fieldCount + "-field_has_choices' id='id_formLegendForm-" + fieldCount + "-field_has_choices'>" +
       "</div>" +
       "<div class='formElementGroup'>" +
@@ -95,9 +95,9 @@ function addFieldClicked() {
 
 /* Docs */
 function deleteFieldClicked(deleteButton) {
-  //Write the code to dlete the formLegendField div and decrement the $('#id_formLegendForm-TOTAL_FORMS').attr('value', fieldCount + 1);
   var formLegendField = deleteButton.parentNode;
   var fieldCount = $('.formLegendField').length;
-  $(formLegendField).remove();
-  $('#id_formLegendForm-TOTAL_FORMS').attr('value', fieldCount - 1);
+  $(formLegendField).children('.hideMe').children('input').attr('checked', true);
+  $(formLegendField).css('visibility', 'hidden');
+  $(formLegendField).css('position', 'absolute');
 }

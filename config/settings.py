@@ -9,6 +9,8 @@ import sys
 from path import path
 from django.conf import global_settings
 
+from libs import xframeMiddleware
+
 PROJECT_ROOT = path(__file__).abspath().dirname().dirname()
 sys.path.insert(0, PROJECT_ROOT / 'libs')
 sys.path.insert(0, PROJECT_ROOT / 'apps')

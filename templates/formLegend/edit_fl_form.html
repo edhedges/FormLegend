@@ -38,7 +38,11 @@
         <div class="formLegendField">
           {{ formLegendField.id }}
           {% for field in formLegendField.visible_fields %}
+          {% if field.label == 'Delete' %}
+          <div class="formElementGroup hideMe">
+          {% else %}
           <div class="formElementGroup">
+          {% endif %}
             <label>{{ field.label|title }}</label>
             {% if field.errors %}
             <span class="errors">{{ field.errors }}</span>

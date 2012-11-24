@@ -2824,30 +2824,29 @@ easyXDM.stack.RpcBehavior = function(proxy, config){
 global.easyXDM = easyXDM;
 })(window, document, location, window.setTimeout, decodeURIComponent, encodeURIComponent);
 
-function renderFormLegendForm(){
-  var df_form_key, provider_url,
-  flf_id = 'fl_form',
-  fl_div = document.getElementById(flf_id);
-  //easyXDM_script_path = 'http://127.0.0.1:8000/static/javascripts/easyXDM/easyXDM.debug.js';
-  if (typeof(fl_div) != 'undefined' && fl_div !== null) {
-    df_form_key = fl_div.className.split(' ', 1)[0];
-    provider_url = "http://127.0.0.1:8000/provider/" + df_form_key;
-    //var easyXDM_script = document.createElement('script'); easyXDM_script.type = 'text/javascript'; easyXDM_script.async = true;
-    //easyXDM_script.src = easyXDM_script_path;
-    //(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(easyXDM_script);
+var df_form_key,
+provider_url,
+flf_id = 'fl_form',
+fl_div = document.getElementById(flf_id);
+if (typeof(fl_div) != 'undefined' && fl_div !== null) {
+  df_form_key = fl_div.className.split(' ', 1)[0];
+  provider_url = "http://127.0.0.1:8000/provider/" + df_form_key;
+}
+else {
+  //HANDLE ERRORS
+}
+
+var socket = new easyXDM.Socket({
+  remote: provider_url,
+  container: flf_id,
+  props: {style: {width: "100%", height: "100%"} },
+  onMessage: function(message, origin){
+    destroySocket();
   }
-  else {
-    //HANDLE ERRORS
-  }
-  var socket = new easyXDM.Socket({
-    remote: provider_url,
-    container: flf_id,
-    props: {style: {width: "100%", height: "100%"} },
-    onMessage: function(message, origin){
-        alert("Received '" + message + "' from '" + origin + "'");
-    },
-    onReady: function() {
-        socket.postMessage("Yay, it works!");
-    }
-  });
-}window.onload = renderFormLegendForm;
+});
+
+/* docs */
+function destroySocket() {
+  socket.destroy();
+  fl_div.innerHTML = "<p style='display: block; background-color: white; color: green;'>Form succesfully submitted!</p>";
+}
