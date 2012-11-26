@@ -3,7 +3,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 
 from formLegend.views import DashboardView, AddWebsiteView, EditWebsiteView, \
     DeleteWebsiteView, AddFormView, InstallFormView, EditFormView,\
@@ -14,20 +14,17 @@ from registration.views import register
 
 from captchaForm import *
 
-import forms_builder.forms.urls  # remove when done with it
-
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
     #admin and grappelli skin for admin urls
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^formBuilder/', include(forms_builder.forms.urls)),  # remove when done with it
     url(r'^grappelli/', include('grappelli.urls')),
     #django-simple-captcha
     url(r'^captcha/', include('captcha.urls')),
     #may need this for favicon.ico but I am not sure
-    #url(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
 )
 
 #url patterns for django-registration

@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
@@ -28,7 +30,7 @@ class DynamicFormLegendForm(models.Model):
     """
     user = models.ForeignKey(User)
     fl_form = models.OneToOneField('FormLegendForm', related_name='flFormOneToOne')
-    form_key = models.SlugField(max_length=50, blank=True)
+    form_key = models.SlugField(max_length=50, blank=True, editable=False)
     form_script = models.TextField(blank=True)
     form_html = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)
@@ -171,8 +173,6 @@ class FormLegendWebsite(models.Model):
         This method overrides djangos Model.save() to make sure the slug
         only gets created once to avoid broken urls. Then it calls the
         regular Model.save() method via super to retain functionality.
-
-        FIX THIS SO THAT TWO WEBSITES CANT HAVE SAME SLUG
         """
         if not self.id:
             self.website_slug = slugify(self.site_name)

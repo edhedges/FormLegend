@@ -1,9 +1,9 @@
 from captcha.fields import CaptchaField
 from registration.backends.default import DefaultBackend
-from registration.forms import RegistrationForm
+from registration.forms import RegistrationFormUniqueEmail
 
 
-class CaptchaRegistrationForm(RegistrationForm):
+class CaptchaRegistrationForm(RegistrationFormUniqueEmail):
     """
     Subclassing the default RegistrationForm to add a captcha field
     """

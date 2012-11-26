@@ -10,9 +10,11 @@
 <div class="row">
   <div class="offset-by-half fifteen columns">
     {% if form.non_field_errors %}
-      <p class="errors">Please correct the following errors:</p>
-      <span class="errors">{{ form.non_field_errors }}</span>
-      {% endif %}
+    <p class="errors">Please correct the following errors:</p>
+    {% for error in form.non_field_errors %}
+    <span class="errors">A {{ error }}</span>
+    {% endfor %}
+    {% endif %}
     <form id="formLegendForm" method="post" action=".">
       {% csrf_token %}
       {% for field in form.visible_fields %}

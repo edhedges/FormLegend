@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}Login{% endblock %}
 
 {% block content %}
@@ -18,13 +19,13 @@
     <form method="post" action="?next={{ next|default:"/dashboard/" }}">
       {% csrf_token %}
       {% for field in form.visible_fields %}
-          <div class="formElementGroup">
-            <label>{{ field.label|title }}</label>
-            {% if field.errors %}
-            <span class="errors">{{ field.errors }}</span>
-            {% endif %}
-            {{ field|safe }}
-          </div>
+        <div class="formElementGroup">
+          <label>{{ field.label|title }}</label>
+          {% if field.errors %}
+          <span class="errors">{{ field.errors }}</span>
+          {% endif %}
+          {{ field|safe }}
+        </div>
       {% endfor %}
       <input class="formButton" type="submit" value="Login" />
       <a href="{% url auth_password_reset %}" class="forgotPasswordLink">Forgot Password?</a>

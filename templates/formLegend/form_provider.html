@@ -17,7 +17,7 @@
       {{ fl_error }}
       {% endif %}
 
-      <span style="display: none">
+      <span style="visibility: hidden; position: absolute">
         <form id="fl_form_data_form" method="post" action=".">
         {% csrf_token %}
         {{ form }}
@@ -28,7 +28,14 @@
       <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
       <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}javascripts/libs/jquery-1.8.0.min.js"%3E%3C/script%3E'))</script>
       <script type="text/javascript">
-        var socket = new easyXDM.Socket({});
+        var current_url = window.location.href;
+        alert(current_url);
+        if (current_url.indexOf('success-url') === -1) {
+          var socket = new easyXDM.Socket({});
+        }
+        else {
+          alert('success');
+        }
         /* docs */
         function submitFLForm(submitButton) {
           var fl_form = submitButton.form, form_data = 'BEGIN\n', form_data_form = $('#fl_form_data_form');
@@ -38,9 +45,11 @@
           });
           form_data += 'END';
           $(form_data_form).children('textarea').val(form_data);
+          alert(form_data);
           $(form_data_form).submit();
-          socket.postMessage('destroySocket');
         }
+        // get the
+        //socket.postMessage('destroySocket');
       </script>
     </body>
 </html>

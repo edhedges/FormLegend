@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.sites.models import get_current_site
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS,\
+    ObjectDoesNotExist
 from django.forms import fields
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
@@ -17,22 +19,18 @@ from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm,\
 import formLegendField
 
 
-def saveDynamicFormLegendForm(authenticated_user, form_legend_form):
+def saveDynamicFormLegendForm(request, form_legend_form):
     """
     docs
     """
+    authenticated_user = request.user
     form_fields = FormLegendField.objects.filter(
         user=authenticated_user,
         form=form_legend_form
     )
     field_list = createFieldList(form_fields)
     form_instance = DynamicFormLegendFormForm(field_list)
-    print 'form_instance'
-    print form_instance
-    print 'form_instance as p'
-    print form_instance.as_p()
     form_html = generateFormHtml(form_instance)
-    print 'form html' + form_html
     df_obj, df_was_created = DynamicFormLegendForm.objects.get_or_create(
         user=authenticated_user,
         fl_form=form_legend_form
@@ -40,7 +38,7 @@ def saveDynamicFormLegendForm(authenticated_user, form_legend_form):
     df_obj.form_html = form_html
     if df_was_created:
         df_obj.form_key = authenticated_user.username + "-" + str(df_obj.pk)
-        df_obj.form_script = generateUserFormScript(df_obj.form_key)
+        df_obj.form_script = generateUserFormScript(df_obj.form_key, request)
     df_obj.save()
 
 
@@ -53,10 +51,19 @@ def createFieldList(form_fields):
         field_label = field.field_label.lower().replace(' ', '_')
         field_class = formLegendField.FORM_LEGEND_FIELDS[field.field_type]
         field_instance = getattr(fields, field_class.__name__)()
-        if field.field_is_required:
-            field_list.append(DynamicFormField(field.field_type, field_label, field_instance, True))
-        else:
-            field_list.append(DynamicFormField(field.field_type, field_label, field_instance, False))
+        field_is_hidden = field.field_is_hidden
+        field_is_required = field.field_is_required
+        field_has_choices = field.field_has_choices
+        field_choices = field.field_choices
+        field_initial_value = field.field_initial_value
+        field_help_text = field.field_help_text
+        field_list.append(
+            DynamicFormField(
+                field_label, field.field_type, field_instance, field_is_hidden,
+                field_is_required, field_has_choices, field_choices,
+                field_initial_value, field_help_text
+            )
+        )
     return field_list
 
 
@@ -73,7 +80,7 @@ def generateFormHtml(form_instance):
     return form_html
 
 
-def generateUserFormScript(form_key):
+def generateUserFormScript(form_key, request):
     """
     docs
     """
@@ -83,7 +90,7 @@ def generateUserFormScript(form_key):
     form_script_components.append("  var fl_form_key = '%s';\n" % form_key)
     form_script_components.append("  (function() {\n")
     form_script_components.append("    var fl_script = document.createElement('script'); fl_script.type = 'text/javascript'; fl_script.async = true;\n")
-    form_script_components.append("    fl_script.src = 'http://127.0.0.1:8000/form-script/' + fl_form_key + '/fl.js';\n")
+    form_script_components.append("    fl_script.src = 'http://%s/form-script/' + fl_form_key + '/fl.js';\n" % get_current_site(request).domain)
     form_script_components.append("    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(fl_script);\n")
     form_script_components.append("  })();\n")
     form_script_components.append("</script>\n")
@@ -96,11 +103,17 @@ class DynamicFormField(object):
     """
     docs
     """
-    def __init__(self, field_type, field_label, field_class, is_required):
-        self.field_type = field_type
+    def __init__(self, field_label, field_type, field_class, is_hidden,
+        is_required, has_choices, choices, initial_value, help_text):
         self.field_label = field_label
+        self.field_type = field_type
         self.field_class = field_class
+        self.is_hidden = is_hidden
         self.is_required = is_required
+        self.has_choices = has_choices
+        self.choices = choices
+        self.initial_value = initial_value
+        self.help_text = help_text
 
 
 class LogInRequiredMixin(object):
@@ -176,8 +189,16 @@ class AddWebsiteView(LogInRequiredMixin, CreateView):
         """
         fl_website_form = form.save(commit=False)
         fl_website_form.user = self.request.user
-        fl_website_form.save()
+        try:
+            fl_website_form.full_clean()
+        except ValidationError as e:
+            non_field_errors = e.message_dict[NON_FIELD_ERRORS]
+            form.non_field_errors = non_field_errors
+            return self.form_invalid(form)
         return super(AddWebsiteView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class EditWebsiteView(LogInRequiredMixin, UpdateView):
@@ -191,6 +212,22 @@ class EditWebsiteView(LogInRequiredMixin, UpdateView):
     form_class = FormLegendWebsiteForm
     template_name = 'formLegend/edit_fl_website.html'
     success_url = '/dashboard/'
+
+    def form_valid(self, form):
+        """
+        docs
+        """
+        fl_website_form = form.save(commit=False)
+        try:
+            fl_website_form.full_clean()
+        except ValidationError as e:
+            non_field_errors = e.message_dict[NON_FIELD_ERRORS]
+            form.non_field_errors = non_field_errors
+            return self.form_invalid(form)
+        return super(EditWebsiteView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class DeleteWebsiteView(LogInRequiredMixin, DeleteView):
@@ -256,15 +293,19 @@ class AddFormView(LogInRequiredMixin, CreateView):
         if fl_form_formset.is_valid():
             fl_form_form = form.save(commit=False)
             fl_form_form.user = self.request.user
+            try:
+                fl_form_form.full_clean()
+            except ValidationError as e:
+                non_field_errors = e.message_dict[NON_FIELD_ERRORS]
+                form.non_field_errors = non_field_errors
+                return self.form_invalid(form)
             fl_form_form.save()
             fl_field_forms = fl_form_formset.save(commit=False)
             for field_form in fl_field_forms:
                 field_form.user = self.request.user
                 field_form.form_id = fl_form_form.pk
                 field_form.save()
-            print fl_form_form.pk
-            print fl_form_form
-            saveDynamicFormLegendForm(self.request.user, fl_form_form)
+            saveDynamicFormLegendForm(self.request, fl_form_form)
             return HttpResponseRedirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -339,14 +380,19 @@ class EditFormView(LogInRequiredMixin, UpdateView):
         fl_form_formset = context['formLegendFormFormset']
         if fl_form_formset.is_valid():
             fl_form_form = form.save(commit=False)
-            fl_form_form.user = self.request.user
+            try:
+                fl_form_form.full_clean()
+            except ValidationError as e:
+                non_field_errors = e.message_dict[NON_FIELD_ERRORS]
+                form.non_field_errors = non_field_errors
+                return self.form_invalid(form)
             fl_form_form.save()
             fl_field_forms = fl_form_formset.save(commit=False)
             for field_form in fl_field_forms:
                 field_form.user = self.request.user
                 field_form.form_id = fl_form_form.pk
                 field_form.save()
-            saveDynamicFormLegendForm(self.request.user, fl_form_form)
+            saveDynamicFormLegendForm(self.request, fl_form_form)
             return HttpResponseRedirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -420,8 +466,6 @@ class FormLegendProviderView(XFrameExemptMixin, CreateView):
         df_user_name = df_key_tup[0]
         fl_form_id = df_key_tup[2]
         if fl_form_id == 'url':
-            print 'form submission successful'
-            # need to handle for result being emailed
             context['success'] = 'Form submission success'
             return context
         else:
@@ -445,6 +489,7 @@ class FormLegendProviderView(XFrameExemptMixin, CreateView):
         """
         docs
         """
+        print 'in here'
         context = self.get_context_data()
         user_obj = context['user_obj']
         user_form = form.save(commit=False)
@@ -452,6 +497,4 @@ class FormLegendProviderView(XFrameExemptMixin, CreateView):
         df_obj = context['df_obj']
         user_form.fl_form = df_obj
         user_form.save()
-        print 'form submission saved'
-            # need to handle for result being emailed
         return super(FormLegendProviderView, self).form_valid(form)

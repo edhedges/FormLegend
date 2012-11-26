@@ -1,9 +1,12 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
     FormLegendFormData
 
 import formLegendField
+
+from pprint import pprint  # REMOVE THIS WHEN DONE DEBUGGING!!!!!!!
 
 
 class FormLegendFormDataForm(forms.ModelForm):
@@ -26,10 +29,7 @@ class DynamicFormLegendFormForm(forms.Form):
         """
         super(DynamicFormLegendFormForm, self).__init__(*args, **kwargs)
         for field in field_list:
-            print field.field_type
-            print field.field_label
-            print field.field_class
-            print field.is_required
+            pprint(vars(field))
             if(field.field_type in formLegendField.FORM_LEGEND_WIDGETS):
                 widget_class = formLegendField.FORM_LEGEND_WIDGETS[field.field_type]
                 if widget_class.__name__ == 'SelectDateWidget':

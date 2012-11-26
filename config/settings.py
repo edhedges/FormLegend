@@ -139,7 +139,6 @@ INSTALLED_APPS = (
     'compressor',
     'registration',
     'captcha',
-    'forms_builder.forms',
 
     # Custom management command apps
     'startup',
