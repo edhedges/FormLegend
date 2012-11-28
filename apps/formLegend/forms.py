@@ -1,5 +1,7 @@
 from django import forms
-from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+
+from django.http import HttpResponseRedirect
 
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
     FormLegendFormData
@@ -17,6 +19,27 @@ class FormLegendFormDataForm(forms.ModelForm):
         model = FormLegendFormData
         exclude = ('user', 'fl_form', 'form_key', 'date_created')
 
+    def save(self, force_insert=False, force_update=False, commit=True):
+        """
+        docs
+        """
+        form_data = super(FormLegendFormDataForm, self).save(commit=False)
+        if commit:
+            form_data.save()
+            fl_form_obj = form_data.fl_form.fl_form
+            should_email = fl_form_obj.result_emailed
+            if should_email:
+                subject = fl_form_obj.email_subject
+                message = form_data.form_data
+                sender = fl_form_obj.email_from
+                recipient = [fl_form_obj.email_to]
+                if sender == '':
+                    sender = 'formlegend_support@formlegend.com'
+                if subject == '':
+                    subject == 'Form Legend Form: %s Submission' % fl_form_obj.form_name
+                send_mail(subject, message, sender, recipient)
+        return form_data
+
 
 class DynamicFormLegendFormForm(forms.Form):
     """
@@ -29,7 +52,7 @@ class DynamicFormLegendFormForm(forms.Form):
         """
         super(DynamicFormLegendFormForm, self).__init__(*args, **kwargs)
         for field in field_list:
-            pprint(vars(field))
+            pprint(vars(field))  # REMOVE THIS WHEN DONE DEBUGGING!!!!!!!
             if(field.field_type in formLegendField.FORM_LEGEND_WIDGETS):
                 widget_class = formLegendField.FORM_LEGEND_WIDGETS[field.field_type]
                 if widget_class.__name__ == 'SelectDateWidget':
@@ -43,6 +66,12 @@ class DynamicFormLegendFormForm(forms.Form):
                 self.fields[field.field_label] = field.field_class
             if field.is_required:
                 self.fields[field.field_label].widget.attrs['class'] = 'required_field'
+            if field.initial_value:
+                self.fields[field.field_label].initial = field.initial_value
+            if field.help_text:
+                self.fields[field.field_label].help_text = field.help_text
+            if field.has_choices and field.field_type in formLegendField.ALLOWS_CHOICES:
+                self.fields[field.field_label].choices = field.choices
 
 
 class FormLegendWebsiteForm(forms.ModelForm):

@@ -61,10 +61,6 @@ function addFieldClicked() {
         "</select>" +
       "</div>" +
       "<div class='formElementGroup'>" +
-        "<label>Field Is Hidden&nbsp;</label>" +
-        "<input type='checkbox' name='formLegendForm-" + fieldCount + "-field_is_hidden' id='id_formLegendForm-" + fieldCount + "-field_is_hidden'>" +
-      "</div>" +
-      "<div class='formElementGroup'>" +
         "<label>Field Is Required&nbsp;</label>" +
         "<input checked='checked' type='checkbox' name='formLegendForm-" + fieldCount + "-field_is_required' id='id_formLegendForm-" + fieldCount + "-field_is_required'>" +
       "</div>" +

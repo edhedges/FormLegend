@@ -1,5 +1,3 @@
-import re
-
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
@@ -50,7 +48,6 @@ class FormLegendField(models.Model):
     form = models.ForeignKey('FormLegendForm', related_name='formLegendForm')
     field_label = models.CharField(max_length=100)
     field_type = models.IntegerField(choices=formLegendField.DESCRIPTIONS)
-    field_is_hidden = models.BooleanField(default=False)
     field_is_required = models.BooleanField(default=True)
     field_has_choices = models.BooleanField(default=False)
     field_choices = models.CharField(
@@ -88,6 +85,32 @@ class FormLegendField(models.Model):
                     )
                 )
             super(FormLegendField, self).clean()
+
+    def get_choices(self):
+        """
+        A function used to get a choice list
+
+        original author:
+        https://github.com/stephenmcd/django-forms-builder/blob/master/forms_builder/forms/models.py#L168
+        """
+        choice = ""
+        quoted = False
+        choices_quote = '`'
+        for char in self.field_choices:
+            if not quoted and char == choices_quote:
+                quoted = True
+            elif quoted and char == choices_quote:
+                quoted = False
+            elif char == "," and not quoted:
+                choice = choice.strip()
+                if choice:
+                    yield choice, choice
+                choice = ""
+            else:
+                choice += char
+        choice = choice.strip()
+        if choice:
+            yield choice, choice
 
 
 class FormLegendForm(models.Model):

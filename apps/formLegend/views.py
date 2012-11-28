@@ -51,15 +51,14 @@ def createFieldList(form_fields):
         field_label = field.field_label.lower().replace(' ', '_')
         field_class = formLegendField.FORM_LEGEND_FIELDS[field.field_type]
         field_instance = getattr(fields, field_class.__name__)()
-        field_is_hidden = field.field_is_hidden
         field_is_required = field.field_is_required
         field_has_choices = field.field_has_choices
-        field_choices = field.field_choices
+        field_choices = field.get_choices()
         field_initial_value = field.field_initial_value
         field_help_text = field.field_help_text
         field_list.append(
             DynamicFormField(
-                field_label, field.field_type, field_instance, field_is_hidden,
+                field_label, field.field_type, field_instance,
                 field_is_required, field_has_choices, field_choices,
                 field_initial_value, field_help_text
             )
@@ -72,7 +71,7 @@ def generateFormHtml(form_instance):
     docs
     """
     form_html_components = []
-    form_html_components.append("<form>")
+    form_html_components.append("<form id='fl_user_form'>")
     form_html_components.append(form_instance.as_p())
     form_html_components.append("<input type='button' onclick='submitFLForm(this)' value='Submit' />")
     form_html_components.append("</form>")
@@ -85,7 +84,7 @@ def generateUserFormScript(form_key, request):
     docs
     """
     form_script_components = []
-    form_script_components.append("<div id='fl_form' class='%s'></div>\n" % form_key)
+    form_script_components.append("<div id='fl_form' class='%s'></div>\n" % form_key)  # think about injecting this into the page on load???
     form_script_components.append("<script type='text/javascript'>\n")
     form_script_components.append("  var fl_form_key = '%s';\n" % form_key)
     form_script_components.append("  (function() {\n")
@@ -103,12 +102,11 @@ class DynamicFormField(object):
     """
     docs
     """
-    def __init__(self, field_label, field_type, field_class, is_hidden,
-        is_required, has_choices, choices, initial_value, help_text):
+    def __init__(self, field_label, field_type, field_class, is_required,
+        has_choices, choices, initial_value, help_text):
         self.field_label = field_label
         self.field_type = field_type
         self.field_class = field_class
-        self.is_hidden = is_hidden
         self.is_required = is_required
         self.has_choices = has_choices
         self.choices = choices
@@ -437,7 +435,7 @@ class JSRedirectView(XFrameExemptMixin, RedirectView):
                 fl_form=fl_form_id,
                 form_key=df_key
             )
-        except DynamicFormLegendForm.DoesNotExist:
+        except ValueError, DynamicFormLegendForm.DoesNotExist:
             return error_url
         fl_form_url = df_obj.fl_form.form_url
         if referer_url == fl_form_url:
@@ -466,14 +464,17 @@ class FormLegendProviderView(XFrameExemptMixin, CreateView):
         df_user_name = df_key_tup[0]
         fl_form_id = df_key_tup[2]
         if fl_form_id == 'url':
-            context['success'] = 'Form submission success'
+            if df_user_name == 'success':
+                context['success'] = 'Form submission success'
+            if df_user_name == 'error':
+                context['error'] = 'There was a problem with your FormLegend markup.'
             return context
         else:
             try:
                 user_obj = User.objects.get(username=df_user_name)
                 context['user_obj'] = user_obj
             except User.DoesNotExist:
-                context['fl_error'] = 'User does not exist'
+                context['fl_user_error'] = 'User does not exist. Please make sure you have followed the installation instructions.'
             try:
                 df_obj = DynamicFormLegendForm.objects.get(
                     user=user_obj,
@@ -482,14 +483,13 @@ class FormLegendProviderView(XFrameExemptMixin, CreateView):
                 )
                 context['df_obj'] = df_obj
             except:
-                context['fl_error'] = 'Form does not exist'
+                context['fl_form_error'] = 'Form does not exist. Please make sure you have followed the installation instructions.'
             return context
 
     def form_valid(self, form):
         """
         docs
         """
-        print 'in here'
         context = self.get_context_data()
         user_obj = context['user_obj']
         user_form = form.save(commit=False)

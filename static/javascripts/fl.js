@@ -2830,23 +2830,14 @@ flf_id = 'fl_form',
 fl_div = document.getElementById(flf_id);
 if (typeof(fl_div) != 'undefined' && fl_div !== null) {
   df_form_key = fl_div.className.split(' ', 1)[0];
-  provider_url = "http://127.0.0.1:8000/provider/" + df_form_key;
+  if(df_form_key == '') df_form_key = 'error-url';
+  provider_url = "http://127.0.0.1:8000/provider/" + df_form_key + '/';
+  var socket = new easyXDM.Socket({
+    remote: provider_url,
+    container: flf_id,
+    props: {style: {width: "100%", height: "100%"}}
+  });
 }
 else {
-  //HANDLE ERRORS
-}
-
-var socket = new easyXDM.Socket({
-  remote: provider_url,
-  container: flf_id,
-  props: {style: {width: "100%", height: "100%"} },
-  onMessage: function(message, origin){
-    destroySocket();
-  }
-});
-
-/* docs */
-function destroySocket() {
-  socket.destroy();
-  fl_div.innerHTML = "<p style='display: block; background-color: white; color: green;'>Form succesfully submitted!</p>";
+  alert('Unable to find div element to create form in. Please make sure you have followed the installation instructions.')
 }

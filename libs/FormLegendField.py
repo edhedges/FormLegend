@@ -2,9 +2,6 @@ from django import forms
 from django.forms.extras import SelectDateWidget
 
 """
-IMPORTANT: I have decided to remove File uploads for first release of
-FormLegend. It is just commented out for now.
-
 Constants for input types from:
 https://docs.djangoproject.com/en/1.4/ref/forms/fields/#built-in-field-classes
 https://docs.djangoproject.com/en/1.4/ref/forms/widgets/#built-in-widgets
@@ -14,7 +11,6 @@ TEXT = 2
 SELECT = 3
 DATE = 4
 DATETIME = 5
-#FILE = 6
 SELECTMULTIPLE = 6
 HIDDEN = 7
 TIME = 8
@@ -25,16 +21,15 @@ EMAIL = 12
 DECIMAL = 13
 INTEGER = 14
 
-### Also allow for different types of buttons ###
-    # Submit, Cancel, Reset, Image button???
-
+"""
+Field descriptions used in select list for adding/editing a form
+"""
 DESCRIPTIONS = (
     (CHECKBOX, 'Check Box'),
     (TEXT, 'Single-Line Text'),
     (SELECT, 'Single-Select List'),
     (DATE, 'Date YYYY/MM/DD'),
     (DATETIME, 'Date YYYY/MM/DD and Time HH:MM:SS'),
-    #(FILE, 'File Upload'),
     (SELECTMULTIPLE, 'Multi-Select List'),
     (HIDDEN, 'Hidden'),
     (TIME, 'Time HH:MM:SS'),
@@ -55,7 +50,6 @@ FORM_LEGEND_FIELDS = {
     SELECT: forms.ChoiceField,
     DATE: forms.DateField,
     DATETIME: forms.DateTimeField,
-    #FILE: forms.FileField,
     SELECTMULTIPLE: forms.MultipleChoiceField,
     HIDDEN: forms.CharField,
     TIME: forms.TimeField,
@@ -67,10 +61,20 @@ FORM_LEGEND_FIELDS = {
     INTEGER: forms.IntegerField,
 }
 
+"""
+Widgets used for django form fields
+"""
 FORM_LEGEND_WIDGETS = {
     DATE: SelectDateWidget,
     HIDDEN: forms.HiddenInput,
     TEXTAREA: forms.Textarea,
     CHECKBOXMULTIPLE: forms.CheckboxSelectMultiple,
     RADIOMULTIPLE: forms.RadioSelect,
+}
+
+ALLOWS_CHOICES = {
+    CHECKBOXMULTIPLE: True,
+    SELECT: True,
+    SELECTMULTIPLE: True,
+    RADIOMULTIPLE: True
 }

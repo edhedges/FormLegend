@@ -4,52 +4,85 @@
         <title>FormLegend Provider</title>
         <!-- This should be changed so that it points to the minified version before use in production. -->
         <script type="text/javascript" src="{{ STATIC_URL }}javascripts/easyxdm/easyXDM.debug.js"></script>
+        <style type="text/css">.helptext { color: green; }</style>
     </head>
     <body>
       {% if success %}
-      {{ success }}
+      <p style='display: block; background-color: white; color: green;'>{{ success }}</p>
+      {% elif error %}
+      <p style='display: block; background-color: white; color: red;'>{{ error }}</p>
       {% else %}
-      {% if df_obj.form_html %}
-      {% autoescape off %}
-      {{ df_obj.form_html }}
-      {% endautoescape %}
-      {% elif fl_error %}
-      {{ fl_error }}
-      {% endif %}
-
-      <span style="visibility: hidden; position: absolute">
-        <form id="fl_form_data_form" method="post" action=".">
-        {% csrf_token %}
-        {{ form }}
-        </form>
-      </span>
+        {% if df_obj.form_html %}
+          {% autoescape off %}
+            {{ df_obj.form_html }}
+          {% endautoescape %}
+        {% elif fl_user_error %}
+        <p style='display: block; background-color: white; color: red;'>{{ fl_user_error }}</p>
+        {% elif fl_form_error %}
+        <p style='display: block; background-color: white; color: red;'>{{ fl_form_error }}</p>
+        {% endif %}
+        <span style="visibility: hidden; position: absolute">
+          <form id="fl_form_data_form" method="post" action=".">
+          {% csrf_token %}
+          {{ form }}
+          </form>
+        </span>
       {% endif %}
       <!-- jQuery from google or fallback onto local download -->
       <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
       <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}javascripts/libs/jquery-1.8.0.min.js"%3E%3C/script%3E'))</script>
       <script type="text/javascript">
-        var current_url = window.location.href;
-        alert(current_url);
-        if (current_url.indexOf('success-url') === -1) {
-          var socket = new easyXDM.Socket({});
+      /* this block will keep the form from being submitted on enters inside a textarea */
+      var inFocus = false;
+      $('textarea').focus(function() {
+        inFocus = true;
+      });
+      $('textarea').blur(function() {
+        inFocus = false;
+      });
+
+      /* allows user to hit enter to 'submit' form */
+      $('#fl_user_form').keypress(function(e){
+        if(e.which == 13) {
+          if(!inFocus) $('#fl_user_form').children("input[type='button']").click();
         }
-        else {
-          alert('success');
+      });
+
+      /* docs */
+      function submitFLForm(submitButton) {
+        /* variable declarations */
+        var fl_form = submitButton.form,
+            is_valid = true,
+            validation_msg = 'The following form fields are required:\n\n',
+            form_data = 'Begin Form Data\n\n',
+            form_data_form = $('#fl_form_data_form');
+        /* loop through form inputs and if they are required let user know */
+        $(fl_form).children('p').children('.required_field').each(function() {
+          if(!$(this).val()) {
+            is_valid = false;
+            validation_msg += $(this).parent().children('label').text().slice(0, -1) + '\n';
+          }
+        });
+        if(!is_valid) {
+          validation_msg += '\nPlease fill them out.';
+          alert(validation_msg);
+          return;
         }
-        /* docs */
-        function submitFLForm(submitButton) {
-          var fl_form = submitButton.form, form_data = 'BEGIN\n', form_data_form = $('#fl_form_data_form');
-          $(fl_form).children('p').each(function() {
-            form_data += $(this).children('label').text();
+
+        /* loop through form labels and fields to create form data string */
+        $(fl_form).children('p').each(function() {
+          form_data += $(this).children('label').text();
+          input_element = $(this).children(':nth-child(2)');
+          if(input_element.is(':checkbox')) form_data += input_element.is(':checked') + '\n';
+          else {
             form_data += $(this).children(':nth-child(2)').val() + '\n';
-          });
-          form_data += 'END';
-          $(form_data_form).children('textarea').val(form_data);
-          alert(form_data);
-          $(form_data_form).submit();
-        }
-        // get the
-        //socket.postMessage('destroySocket');
+          }
+        });
+        form_data += '\nEnd Form Data';
+        $(form_data_form).children('textarea').val(form_data);
+        alert(form_data);
+        $(form_data_form).submit();
+      }
       </script>
     </body>
 </html>
