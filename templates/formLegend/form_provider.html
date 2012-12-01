@@ -55,10 +55,17 @@
             is_valid = true,
             validation_msg = 'The following form fields are required:\n\n',
             form_data = 'Begin Form Data\n\n',
-            form_data_form = $('#fl_form_data_form');
+            form_data_form = $('#fl_form_data_form'),
+            input_count, input_label, current_element, str_spacer = '';
         /* loop through form inputs and if they are required let user know */
-        $(fl_form).children('p').children('.required_field').each(function() {
-          if(!$(this).val()) {
+        $(fl_form).children('p').children('.required_field').each(function(i) {
+          if($(this).hasClass('date_field')) {
+            if($(this).val() == 0) {
+              is_valid = false;
+              validation_msg += $(this).parent().children('label').text().slice(0, -1) + ' Input ' + (i+1) + '\n';
+            }
+          }
+          else if(!$(this).val()) {
             is_valid = false;
             validation_msg += $(this).parent().children('label').text().slice(0, -1) + '\n';
           }
@@ -71,17 +78,51 @@
 
         /* loop through form labels and fields to create form data string */
         $(fl_form).children('p').each(function() {
-          form_data += $(this).children('label').text();
-          input_element = $(this).children(':nth-child(2)');
-          if(input_element.is(':checkbox')) form_data += input_element.is(':checked') + '\n';
-          else {
-            form_data += $(this).children(':nth-child(2)').val() + '\n';
+          input_count = $(this).children().length;
+          if($(this).children('.helptext').length > 0) input_count -= 2;
+          else input_count -= 1;
+          input_label = $(this).children('label');
+          form_data += input_label.text();
+          current_element = input_label;
+          if(input_count > 1) str_spacer = ' ';
+          for(var i = 0; i < input_count; i++) {
+            input_element = current_element.next();
+            if(input_element.is(':checkbox')) form_data += input_element.is(':checked') + '\n';
+            else if(input_element.hasClass('date_field')) {
+              if(i != input_count - 1) form_data += input_element.val() + '/';
+              else form_data += input_element.val();
+            }
+            else {
+              if(input_element.val() instanceof Array) {
+                select_mult_arr = input_element.val();
+                for(var i = 0; i < select_mult_arr.length; i++) {
+                  if(i != select_mult_arr.length - 1) {
+                    if(select_mult_arr[i].indexOf(',') === -1) form_data += select_mult_arr[i] + ',';
+                    else form_data += "`" + select_mult_arr[i] + "`,";
+                  }
+                  else {
+                    if(select_mult_arr[i].indexOf(',') === -1) form_data += select_mult_arr[i];
+                    else form_data += "`" + select_mult_arr[i] + "`";
+                  }
+                }
+              }
+              else form_data += input_element.val() + str_spacer;
+            }
+            current_element = input_element;
           }
+          form_data += '\n';
         });
         form_data += '\nEnd Form Data';
+        if(form_data == 'Begin Form Data\n\n\nEnd Form Data') {
+          form_data = 'Begin Form Data\n\n';
+          form_data += $(fl_form).children("input[type='hidden']").attr('name') + ':';
+          if($(fl_form).children("input[type='hidden']").val() == "") form_data += "NULL";
+          else form_data += $(fl_form).children("input[type='hidden']").val(); //check if ""
+          form_data += '\nEnd Form Data';
+        }
         $(form_data_form).children('textarea').val(form_data);
         alert(form_data);
-        $(form_data_form).submit();
+        //$(form_data_form).submit();
       }
       </script>
     </body>

@@ -34,7 +34,7 @@ class FormLegendFormDataForm(forms.ModelForm):
                 sender = fl_form_obj.email_from
                 recipient = [fl_form_obj.email_to]
                 if sender == '':
-                    sender = 'formlegend_support@formlegend.com'
+                    sender = 'eddiehedges@gmail.com'
                 if subject == '':
                     subject == 'Form Legend Form: %s Submission' % fl_form_obj.form_name
                 send_mail(subject, message, sender, recipient)
@@ -64,8 +64,12 @@ class DynamicFormLegendFormForm(forms.Form):
                 self.fields[field.field_label].widget = widget_instance
             else:
                 self.fields[field.field_label] = field.field_class
+            css_classes = ''
+            if field.field_class.__class__.__name__ == 'DateField':
+                css_classes += 'date_field '
             if field.is_required:
-                self.fields[field.field_label].widget.attrs['class'] = 'required_field'
+                css_classes += 'required_field'
+            self.fields[field.field_label].widget.attrs['class'] = css_classes
             if field.initial_value:
                 self.fields[field.field_label].initial = field.initial_value
             if field.help_text:

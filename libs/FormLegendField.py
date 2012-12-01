@@ -1,25 +1,27 @@
 from django import forms
+from django.contrib.admin import widgets
 from django.forms.extras import SelectDateWidget
+
 
 """
 Constants for input types from:
 https://docs.djangoproject.com/en/1.4/ref/forms/fields/#built-in-field-classes
 https://docs.djangoproject.com/en/1.4/ref/forms/widgets/#built-in-widgets
+
+Fields removed for first version: file input, date time input, time input
 """
 CHECKBOX = 1
 TEXT = 2
 SELECT = 3
 DATE = 4
-DATETIME = 5
-SELECTMULTIPLE = 6
-HIDDEN = 7
-TIME = 8
-TEXTAREA = 9
-CHECKBOXMULTIPLE = 10
-RADIOMULTIPLE = 11
-EMAIL = 12
-DECIMAL = 13
-INTEGER = 14
+SELECTMULTIPLE = 5
+HIDDEN = 6
+TEXTAREA = 7
+CHECKBOXMULTIPLE = 8
+RADIOMULTIPLE = 9
+EMAIL = 10
+DECIMAL = 11
+INTEGER = 12
 
 """
 Field descriptions used in select list for adding/editing a form
@@ -29,10 +31,8 @@ DESCRIPTIONS = (
     (TEXT, 'Single-Line Text'),
     (SELECT, 'Single-Select List'),
     (DATE, 'Date YYYY/MM/DD'),
-    (DATETIME, 'Date YYYY/MM/DD and Time HH:MM:SS'),
     (SELECTMULTIPLE, 'Multi-Select List'),
     (HIDDEN, 'Hidden'),
-    (TIME, 'Time HH:MM:SS'),
     (TEXTAREA, 'Multi-Line Text'),
     (CHECKBOXMULTIPLE, 'Check Boxes'),
     (RADIOMULTIPLE, 'Radio Buttons'),
@@ -49,10 +49,8 @@ FORM_LEGEND_FIELDS = {
     TEXT: forms.CharField,
     SELECT: forms.ChoiceField,
     DATE: forms.DateField,
-    DATETIME: forms.DateTimeField,
     SELECTMULTIPLE: forms.MultipleChoiceField,
     HIDDEN: forms.CharField,
-    TIME: forms.TimeField,
     TEXTAREA: forms.CharField,
     CHECKBOXMULTIPLE: forms.MultipleChoiceField,
     RADIOMULTIPLE: forms.ChoiceField,
