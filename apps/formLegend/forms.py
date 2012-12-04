@@ -1,7 +1,6 @@
 from django import forms
 from django.core.mail import send_mail
-
-from django.http import HttpResponseRedirect
+from django.forms.widgets import Input
 
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
     FormLegendFormData
@@ -41,6 +40,10 @@ class FormLegendFormDataForm(forms.ModelForm):
         return form_data
 
 
+class Html5EmailInput(Input):
+    input_type = 'email'
+
+
 class DynamicFormLegendFormForm(forms.Form):
     """
     docs
@@ -65,8 +68,15 @@ class DynamicFormLegendFormForm(forms.Form):
             else:
                 self.fields[field.field_label] = field.field_class
             css_classes = ''
-            if field.field_class.__class__.__name__ == 'DateField':
+            class_name = field.field_class.__class__.__name__
+            if class_name == 'DateField':
                 css_classes += 'date_field '
+            if class_name == 'EmailField':
+                css_classes += 'email_field '
+            if class_name == 'DecimalField':
+                css_classes += 'decimal_field '
+            if class_name == 'IntegerField':
+                css_classes += 'integer_field '
             if field.is_required:
                 css_classes += 'required_field'
             self.fields[field.field_label].widget.attrs['class'] = css_classes

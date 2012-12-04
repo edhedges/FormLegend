@@ -30,8 +30,23 @@
       {% endif %}
       <!-- jQuery from google or fallback onto local download -->
       <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-      <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}javascripts/libs/jquery-1.8.0.min.js"%3E%3C/script%3E'))</script>
+      <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}javascripts/jquery-1.8.0.min.js"%3E%3C/script%3E'))</script>
       <script type="text/javascript">
+      /* Executes when DOM is fully loaded */
+      $(function() {
+        var fl_form = $('#fl_user_form');
+        /* changes dom to be the same structure as other input elements */
+        if($(fl_form).children('ul').length > 0) {
+          $(fl_form).children('ul').replaceWith($(fl_form).children('ul').contents());
+          $($(fl_form).children('li')).each(function () {
+            $(this).replaceWith('<p>' + $(this).html() + '</p>');
+          });
+          $($(fl_form).children('p')).each(function () {
+            $(this).children('label').after($(this).children('label').children('input'));
+          });
+        }
+      });
+
       /* this block will keep the form from being submitted on enters inside a textarea */
       var inFocus = false;
       $('textarea').focus(function() {
@@ -48,31 +63,51 @@
         }
       });
 
+      /* resource found here - http://stackoverflow.com/a/46181/1165441 */
+      function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+      }
+
       /* docs */
       function submitFLForm(submitButton) {
         /* variable declarations */
         var fl_form = submitButton.form,
             is_valid = true,
-            validation_msg = 'The following form fields are required:\n\n',
+            validation_msg = 'The following validation errors occured:\n\n',
             form_data = 'Begin Form Data\n\n',
             form_data_form = $('#fl_form_data_form'),
             input_count, input_label, current_element, str_spacer = '';
+
         /* loop through form inputs and if they are required let user know */
         $(fl_form).children('p').children('.required_field').each(function(i) {
+          input_label = $(this).parent().children('label').text().slice(0, -1);
           if($(this).hasClass('date_field')) {
             if($(this).val() == 0) {
               is_valid = false;
-              validation_msg += $(this).parent().children('label').text().slice(0, -1) + ' Input ' + (i+1) + '\n';
+              validation_msg += input_label + ' Input ' + (i+1) + ' is required.\n';
             }
           }
           else if(!$(this).val()) {
             is_valid = false;
-            validation_msg += $(this).parent().children('label').text().slice(0, -1) + '\n';
+            if(!is_valid) validation_msg += input_label + ' is required\n';
+          }
+          else if($(this).hasClass('email_field')) {
+            is_valid = validateEmail($(this).val());
+            if(!is_valid) validation_msg += input_label + ' is an invalid email.\n';
+          }
+          else if($(this).hasClass('decimal_field')) {
+            is_valid = !isNaN($(this).val());
+            if(!is_valid) validation_msg += input_label + ' is an invalid decimal.\n'
+          }
+          else if($(this).hasClass('integer_field')) {
+            is_valid = !isNaN($(this).val()) && $(this).val().match(/^-?[0-9]+$/);
+            if(!is_valid) validation_msg += input_label + ' is an invalid integer.\n'
           }
         });
         if(!is_valid) {
-          validation_msg += '\nPlease fill them out.';
-          alert(validation_msg);
+          validation_msg += '\nPlease correct them.';
+          $(fl_form).before("<p display: block; background-color: white; color: red;>" + validation_msg + "</p>");
           return;
         }
 
@@ -83,11 +118,12 @@
           else input_count -= 1;
           input_label = $(this).children('label');
           form_data += input_label.text();
+          if(input_label.text() != '') form_data += ':';
           current_element = input_label;
           if(input_count > 1) str_spacer = ' ';
           for(var i = 0; i < input_count; i++) {
             input_element = current_element.next();
-            if(input_element.is(':checkbox')) form_data += input_element.is(':checked') + '\n';
+            if(input_element.is(':checkbox') || input_element.is(':radio')) form_data += input_element.is(':checked');
             else if(input_element.hasClass('date_field')) {
               if(i != input_count - 1) form_data += input_element.val() + '/';
               else form_data += input_element.val();
@@ -109,20 +145,19 @@
               else form_data += input_element.val() + str_spacer;
             }
             current_element = input_element;
+            form_data += '\n';
           }
-          form_data += '\n';
         });
         form_data += '\nEnd Form Data';
         if(form_data == 'Begin Form Data\n\n\nEnd Form Data') {
           form_data = 'Begin Form Data\n\n';
           form_data += $(fl_form).children("input[type='hidden']").attr('name') + ':';
           if($(fl_form).children("input[type='hidden']").val() == "") form_data += "NULL";
-          else form_data += $(fl_form).children("input[type='hidden']").val(); //check if ""
+          else form_data += $(fl_form).children("input[type='hidden']").val();
           form_data += '\nEnd Form Data';
         }
         $(form_data_form).children('textarea').val(form_data);
-        alert(form_data);
-        //$(form_data_form).submit();
+        $(form_data_form).submit();
       }
       </script>
     </body>

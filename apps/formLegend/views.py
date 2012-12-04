@@ -424,7 +424,10 @@ class JSRedirectView(XFrameExemptMixin, RedirectView):
         df_key_tup = df_key.partition('-')
         df_user_name = df_key_tup[0]
         fl_form_id = df_key_tup[2]
-        referer_url = self.request.META['HTTP_REFERER']
+        try:
+            referer_url = self.request.META['HTTP_REFERER']
+        except KeyError:
+            return error_url
         try:
             user_obj = User.objects.get(username=df_user_name)
         except User.DoesNotExist:
@@ -435,7 +438,9 @@ class JSRedirectView(XFrameExemptMixin, RedirectView):
                 fl_form=fl_form_id,
                 form_key=df_key
             )
-        except ValueError, DynamicFormLegendForm.DoesNotExist:
+        except ValueError:
+            return error_url
+        except DynamicFormLegendForm.DoesNotExist:
             return error_url
         fl_form_url = df_obj.fl_form.form_url
         if referer_url == fl_form_url:
