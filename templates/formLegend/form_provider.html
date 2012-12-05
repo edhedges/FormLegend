@@ -71,6 +71,11 @@
 
       /* docs */
       function submitFLForm(submitButton) {
+        if($('.fl_form_error').length > 0) {
+          $('.fl_form_error').each(function() {
+            $(this).remove();
+          });
+        }
         /* variable declarations */
         var fl_form = submitButton.form,
             is_valid = true,
@@ -107,7 +112,7 @@
         });
         if(!is_valid) {
           validation_msg += '\nPlease correct them.';
-          $(fl_form).before("<p display: block; background-color: white; color: red;>" + validation_msg + "</p>");
+          $(fl_form).before("<pre class='fl_form_error' style='display: block; background-color: white; color: red;'>" + validation_msg + "</pre>");
           return;
         }
 

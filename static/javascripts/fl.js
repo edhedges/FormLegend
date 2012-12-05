@@ -2831,7 +2831,7 @@ fl_div = document.getElementById(flf_id);
 if (typeof(fl_div) != 'undefined' && fl_div !== null) {
   df_form_key = fl_div.className.split(' ', 1)[0];
   if(df_form_key == '') df_form_key = 'error-url';
-  provider_url = "http://127.0.0.1:8000/provider/" + df_form_key + '/';
+  provider_url = "http://192.168.1.117//provider/" + df_form_key + '/';
   var socket = new easyXDM.Socket({
     remote: provider_url,
     container: flf_id,

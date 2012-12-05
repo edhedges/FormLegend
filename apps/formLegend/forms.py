@@ -1,13 +1,10 @@
 from django import forms
 from django.core.mail import send_mail
-from django.forms.widgets import Input
 
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
     FormLegendFormData
 
 import formLegendField
-
-from pprint import pprint  # REMOVE THIS WHEN DONE DEBUGGING!!!!!!!
 
 
 class FormLegendFormDataForm(forms.ModelForm):
@@ -40,10 +37,6 @@ class FormLegendFormDataForm(forms.ModelForm):
         return form_data
 
 
-class Html5EmailInput(Input):
-    input_type = 'email'
-
-
 class DynamicFormLegendFormForm(forms.Form):
     """
     docs
@@ -55,7 +48,6 @@ class DynamicFormLegendFormForm(forms.Form):
         """
         super(DynamicFormLegendFormForm, self).__init__(*args, **kwargs)
         for field in field_list:
-            pprint(vars(field))  # REMOVE THIS WHEN DONE DEBUGGING!!!!!!!
             if(field.field_type in formLegendField.FORM_LEGEND_WIDGETS):
                 widget_class = formLegendField.FORM_LEGEND_WIDGETS[field.field_type]
                 if widget_class.__name__ == 'SelectDateWidget':

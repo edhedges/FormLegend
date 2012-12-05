@@ -30,7 +30,7 @@ def saveDynamicFormLegendForm(request, form_legend_form):
     )
     field_list = createFieldList(form_fields)
     form_instance = DynamicFormLegendFormForm(field_list)
-    form_html = generateFormHtml(form_instance)
+    form_html = generateUserFormHtml(form_instance)
     df_obj, df_was_created = DynamicFormLegendForm.objects.get_or_create(
         user=authenticated_user,
         fl_form=form_legend_form
@@ -66,7 +66,7 @@ def createFieldList(form_fields):
     return field_list
 
 
-def generateFormHtml(form_instance):
+def generateUserFormHtml(form_instance):
     """
     docs
     """
