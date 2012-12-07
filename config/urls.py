@@ -88,13 +88,12 @@ urlpatterns += patterns('',
     url(r'^websites/edit/(?P<slug>[-\w]+)/$', EditWebsiteView.as_view(), name='edit_fl_website'),
     url(r'^websites/delete/(?P<slug>[-\w]+)/$', DeleteWebsiteView.as_view(), name='delete_fl_website'),
     url(r'^forms/add/$', AddFormView.as_view(), name='add_fl_form'),
-    url(r'forms/submissions/(?P<slug>[-\w]+)/$', ViewFormDataView.as_view(), name='view_form_data'),
+    url(r'^forms/submissions/(?P<slug>[-\w]+)/$', ViewFormDataView.as_view(), name='view_form_data'),
     url(r'^forms/install/(?P<slug>[-\w]+)/$', InstallFormView.as_view(), name='install_fl_form'),
     url(r'^forms/edit/(?P<slug>[-\w]+)/$', EditFormView.as_view(), name='edit_fl_form'),
     url(r'^forms/delete/(?P<slug>[-\w]+)/$', DeleteFormView.as_view(), name='delete_fl_form'),
     url(r'^form-script/(?P<slug>[-\w]+)/fl.js$', JSRedirectView.as_view(), name='js_redirect'),
     url(r'^provider/(?P<slug>[-\w]+)/$', FormLegendProviderView.as_view(), name='fl_provider'),
-    url(r'^easyXDMtest/$', TemplateView.as_view(template_name='formLegend/easyXDMtest.xhtml'), name='easyXDMtest'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

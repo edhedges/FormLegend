@@ -2823,7 +2823,7 @@ easyXDM.stack.RpcBehavior = function(proxy, config){
 };
 global.easyXDM = easyXDM;
 })(window, document, location, window.setTimeout, decodeURIComponent, encodeURIComponent);
-
+//Ed's stuff
 var df_form_key,
 provider_url,
 flf_id = 'fl_form',
@@ -2831,13 +2831,11 @@ fl_div = document.getElementById(flf_id);
 if (typeof(fl_div) != 'undefined' && fl_div !== null) {
   df_form_key = fl_div.className.split(' ', 1)[0];
   if(df_form_key == '') df_form_key = 'error-url';
-  provider_url = "http://192.168.1.117//provider/" + df_form_key + '/';
+  provider_url = "http://192.168.1.117/provider/" + df_form_key + '/';
   var socket = new easyXDM.Socket({
     remote: provider_url,
     container: flf_id,
     props: {style: {width: "100%", height: "100%"}}
   });
 }
-else {
-  alert('Unable to find div element to create form in. Please make sure you have followed the installation instructions.')
-}
+else alert('Unable to find div element to create form in. Please make sure you have followed the installation instructions.');
