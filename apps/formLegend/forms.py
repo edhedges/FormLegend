@@ -40,11 +40,10 @@ class FormLegendFormDataForm(forms.ModelForm):
 class DynamicFormLegendFormForm(forms.Form):
     """
     docs
-    THIS MUST BE FIXED
     """
     def __init__(self, field_list, *args, **kwargs):
         """
-        FIX THIS SHIT YO
+        docs
         """
         super(DynamicFormLegendFormForm, self).__init__(*args, **kwargs)
         for field in field_list:

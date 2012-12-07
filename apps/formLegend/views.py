@@ -8,7 +8,7 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, CreateView, DetailView,\
-    UpdateView, DeleteView, RedirectView
+    UpdateView, DeleteView, RedirectView, ListView
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
@@ -503,3 +503,17 @@ class FormLegendProviderView(XFrameExemptMixin, CreateView):
         user_form.fl_form = df_obj
         user_form.save()
         return super(FormLegendProviderView, self).form_valid(form)
+
+
+class ViewFormDataView(LogInRequiredMixin, ListView):
+    model = FormLegendFormData
+    template_name = 'formLegend/view_form_data.html'
+    paginate_by = 15
+
+    def get_queryset(self):
+        fl_form_slug = self.kwargs['slug']
+        fl_form_object = FormLegendForm.objects.get(form_slug=fl_form_slug)
+        return FormLegendFormData.objects.filter(
+            user=self.request.user,
+            fl_form=fl_form_object
+        )

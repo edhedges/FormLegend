@@ -44,7 +44,7 @@
     <ul class="fl_objs">
       {% for fl_form in fl_forms %}
       <li>
-        <span class="fl_obj_header">Form <span class="fl_obj_management"> <a href="{% url install_fl_form fl_form.form_slug %}">Install</a> | <a href="{% url edit_fl_form fl_form.form_slug %}">Edit</a> | <a href="{% url delete_fl_form fl_form.form_slug %}">Delete</a></span>
+        <span class="fl_obj_header">Form <span class="fl_obj_management"><a href="{% url view_form_data fl_form.form_slug %}">Submissions</a> | <a href="{% url install_fl_form fl_form.form_slug %}">Install</a> | <a href="{% url edit_fl_form fl_form.form_slug %}">Edit</a> | <a href="{% url delete_fl_form fl_form.form_slug %}">Delete</a></span>
         </span>
         <span class="fl_obj_detail">Name: {{ fl_form.form_name }}</span>
         <span class="fl_obj_detail">Form URL: {{ fl_form.form_url }}</span>

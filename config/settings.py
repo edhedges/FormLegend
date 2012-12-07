@@ -1,9 +1,7 @@
 """
 Django settings for FormLegend project.
 
-Common settings for all environments. Don't directly use this settings file,
-use environments/development.py or environments/production.py and import this
-file from there.
+Common settings for all environments.
 """
 import sys
 from path import path

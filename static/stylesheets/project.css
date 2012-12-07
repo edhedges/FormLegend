@@ -262,3 +262,11 @@ pre {
   font-weight: bold;
   margin-right: 15px;
 }
+
+.liveExample {
+  text-align: center;
+}
+
+.liveExample img {
+  margin-top: 50px
+}
