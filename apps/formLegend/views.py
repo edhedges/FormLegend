@@ -16,7 +16,7 @@ from formLegend.models import FormLegendWebsite, FormLegendForm,\
 from formLegend.forms import FormLegendWebsiteForm, FormLegendFormForm,\
     DynamicFormLegendFormForm, FormLegendFormDataForm
 
-import formLegendField
+import FormLegendField as formLegendField
 
 
 def saveDynamicFormLegendForm(request, form_legend_form):

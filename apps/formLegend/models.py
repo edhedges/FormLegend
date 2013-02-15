@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.template.defaultfilters import slugify
 
-import formLegendField
+import FormLegendField as formLegendField
 
 
 class FormLegendFormData(models.Model):

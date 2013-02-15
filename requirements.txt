@@ -1,7 +1,6 @@
 path.py
 Django
 south
-fabric
 django-grappelli
 django-extensions
 Werkzeug
@@ -10,4 +9,3 @@ django-registration
 django-simple-captcha
 PIL
 Pillow
-pygraphviz

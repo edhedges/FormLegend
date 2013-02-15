@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from formLegend.models import FormLegendWebsite, FormLegendForm,\
     FormLegendFormData
 
-import formLegendField
+import FormLegendField as formLegendField
 
 
 class FormLegendFormDataForm(forms.ModelForm):
